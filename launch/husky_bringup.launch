@@ -1,0 +1,20 @@
+<!-- This is for the onboard robot computer -->
+<launch>
+	<include file="$(find husky_base)/launch/base.launch">
+		<arg name="port" value="/dev/ttyUSB0" />
+	</include>
+
+	<!-- Husky URDFs? Transforms? -->
+	<include file="$(find husky_description)/launch/description.launch" />
+
+	<!-- <include file="$(find hokuyo_node)/launch/hokuyo_test.launch" /> -->
+	<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+		<!-- Starts up faster, but timestamps will be inaccurate. --> 
+		<!-- <param name="calibrate_time" type="bool" value="false"/>  -->
+		<!-- Set the port to connect to here -->
+		<param name="port" type="string" value="/dev/ttyACM0"/> 
+		<param name="intensity" type="bool" value="false"/>
+	</node>
+
+	<include file="$(find husky_pursuit)/launch/camera.launch" />
+</launch>
