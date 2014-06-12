@@ -1,0 +1,19 @@
+<!-- 
+roscore
+rosparam set use_sim_time true
+roslaunch husky_pursuit husky_bringup.launch
+rosrun tf static_transform_publisher 1 0 0 0 0 0 odom_combined base_footprint 100
+
+Connect joystick
+Run this to get the ch flightstick to work:
+	sudo lsusb -v
+
+roslaunch husky_teleop teleop.launch
+
+rosbag record -O husky_laserdata /scan /tf
+rosrun gmapping slam_gmapping scan:=base_scan _odom_frame:=odom_combined
+ -->
+
+<launch>
+
+</launch>
