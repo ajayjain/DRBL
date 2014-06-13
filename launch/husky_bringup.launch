@@ -19,4 +19,5 @@
 	</node>
 
 	<!-- <include file="$(find husky_pursuit)/launch/camera.launch" /> -->
+	<!-- <include file="$(find husky_navigation)/launch/odom_navigation_demo.launch" /> -->
 </launch>

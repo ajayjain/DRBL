@@ -1,13 +1,34 @@
 #!/usr/bin/env python
 
-import Leap, sys, thread, time
+import Leap, sys, thread, time, math
 
 import rospy
+from geometry_msgs.msg import Twist, Vector3
+
+MAX_LINEAR = 0.3 # m/s
+MAX_RAD = math.pi / 4
+THRESHOLD_YAW = math.pi / 8
+THRESHOLD_ROLL = math.pi / 8
 
 class SampleListener(Leap.Listener):
 	finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
 	bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
 	state_names = ['STATE_INVALID', 'STATE_START', 'STATE_UPDATE', 'STATE_END']
+
+	linear = Vector3(0, 0, 0)
+	angular = Vector3(0, 0, 0) # radians per second
+	twist = Twist(linear, angular)
+
+	pub = rospy.Publisher('cmd_vel', Twist)
+
+	def compute_twist(self, roll, pitch, yaw):
+		lin = abs(pitch) >= THRESHOLD_ROLL
+		ang = abs(roll)  >= THRESHOLD_YAW
+		self.linear.x  = MAX_LINEAR * (-1 * pitch / 2 * math.pi) if lin else 0
+		self.angular.z = MAX_RAD    * (-1 * roll / 2 * math.pi)  if ang else 0
+
+	def publish_twist(self):
+		self.pub.publish(self.twist)
 
 	def on_init(self, controller):
 		print "Initialized"
@@ -36,11 +57,18 @@ class SampleListener(Leap.Listener):
 			normal = hand.palm_normal
 			direction = hand.direction
 
+			# pitch = direction.pitch * Leap.RAD_TO_DEG
+			# roll = normal.roll * Leap.RAD_TO_DEG
+			# yaw = direction.yaw * Leap.RAD_TO_DEG
+			# self.compute_twist(pitch, roll, yaw)
+
+			# RPY in radians
+			roll, pitch, yaw = direction.pitch, normal.roll, direction.yaw
+			self.compute_twist(pitch, roll, yaw)
+			self.publish_twist()
+
 			# Calculate the hand's pitch, roll, and yaw angles
-			print "  pitch: %f degrees, roll: %f degrees, yaw: %f degrees" % (
-				direction.pitch * Leap.RAD_TO_DEG,
-				normal.roll * Leap.RAD_TO_DEG,
-				direction.yaw * Leap.RAD_TO_DEG)
+			print "  pitch: %f rad, roll: %f rad, yaw: %f rad" % (pitch, roll, yaw)
 
 		print ""
 
@@ -58,6 +86,8 @@ class SampleListener(Leap.Listener):
 			return "STATE_INVALID"
 
 def main():
+	rospy.init_node("leap_control")
+
 	# Create a sample listener and controller
 	listener = SampleListener()
 	controller = Leap.Controller()
@@ -65,19 +95,18 @@ def main():
 	# Have the sample listener receive events from the controller
 	controller.add_listener(listener)
 
-	# Keep this process running until Enter is pressed
-	print "Press Enter to quit..."
-	try:
-		sys.stdin.readline()
-	except KeyboardInterrupt:
-		pass
-	finally:
-		# Remove the sample listener when done
-		controller.remove_listener(listener)
+	rospy.spin()
+
+	# # Keep this process running until Enter is pressed
+	# print "Press Enter to quit..."
+	# try:
+	# 	sys.stdin.readline()
+	# except KeyboardInterrupt:
+	# 	pass
+	# finally:
+	# 	# Remove the sample listener when done
+	# 	controller.remove_listener(listener)
 
 
 if __name__ == "__main__":
 	main()
-
-# sys.path.append("/homes/robonurse/LeapSDK/lib")
-# sys.path.append("/homes/robonurse/LeapSDK/lib/x64")
