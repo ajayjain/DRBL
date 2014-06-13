@@ -5,10 +5,10 @@ import Leap, sys, thread, time, math
 import rospy
 from geometry_msgs.msg import Twist, Vector3
 
-MAX_LINEAR = 0.3 # m/s
-MAX_RAD = math.pi / 4
-THRESHOLD_YAW = math.pi / 8
-THRESHOLD_ROLL = math.pi / 8
+MAX_LINEAR 		= 0.3 # m/s
+MAX_RAD 		= math.pi / 4
+THRESHOLD_PITCH = math.pi / 8
+THRESHOLD_ROLL  = math.pi / 8
 
 class SampleListener(Leap.Listener):
 	finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
@@ -22,8 +22,8 @@ class SampleListener(Leap.Listener):
 	pub = rospy.Publisher('cmd_vel', Twist)
 
 	def compute_twist(self, roll, pitch, yaw):
-		lin = abs(pitch) >= THRESHOLD_ROLL
-		ang = abs(roll)  >= THRESHOLD_YAW
+		lin = abs(pitch) >= THRESHOLD_PITCH
+		ang = abs(roll)  >= THRESHOLD_ROLL
 		self.linear.x  = MAX_LINEAR * (-1 * pitch / 2 * math.pi) if lin else 0
 		self.angular.z = MAX_RAD    * (-1 * roll / 2 * math.pi)  if ang else 0
 
