@@ -18,5 +18,5 @@
 		<param name="frame_id" value="/base_footprint_rear_bumper_part"/>
 	</node>
 
-	<include file="$(find husky_pursuit)/launch/camera.launch" />
+	<!-- <include file="$(find husky_pursuit)/launch/camera.launch" /> -->
 </launch>

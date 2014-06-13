@@ -12,7 +12,6 @@ Panels:
         - /Path1
         - /LaserScan1
         - /TF1
-        - /TF1/Status1
       Splitter Ratio: 0.5
     Tree Height: 531
   - Class: rviz/Selection
@@ -182,6 +181,7 @@ Visualization Manager:
         LaserScan: true
         Path: true
         RobotModel: true
+        TF: true
         Value: true
       Zoom Factor: 1
     - Class: rviz/TF
@@ -198,6 +198,14 @@ Visualization Manager:
         {}
       Update Interval: 0
       Value: false
+    - Alpha: 0.7
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /map
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -217,22 +225,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.47836
+      Distance: 7.36965
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -0.327206
+        Y: 0.291539
+        Z: 0.689983
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.334797
+      Pitch: 0.694797
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.24854
+      Yaw: 0.170353
     Saved: ~
 Window Geometry:
   Camera:
