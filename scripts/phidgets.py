@@ -60,13 +60,13 @@ def closePhidget():
 		print("Exiting....")
 		exit(1)
 
-def phidgetsLauncher():
+def phidgetsLauncher(input_changed_callback=interfaceKitInputChanged):
 	#Main Program Code
 	try:
 		interfaceKit.setOnAttachHandler(interfaceKitAttached)
 		interfaceKit.setOnDetachHandler(interfaceKitDetached)
 		interfaceKit.setOnErrorhandler(interfaceKitError)
-		interfaceKit.setOnInputChangeHandler(interfaceKitInputChanged)
+		interfaceKit.setOnInputChangeHandler(input_changed_callback)
 		interfaceKit.setOnOutputChangeHandler(interfaceKitOutputChanged)
 		interfaceKit.setOnSensorChangeHandler(interfaceKitSensorChanged)
 	except PhidgetException as e:
@@ -100,19 +100,6 @@ def phidgetsLauncher():
 	else:
 		displayDeviceInfo()
 
-
-
-
-
-
-
-	# try:
-	#     print("Tring to test shooter")
-	#     shoot
-	# except PhidgetException as e:
-	#     print("Phidget Exception %i: %s" % (e.code, e.details))
-		
-
 	# print("Setting the data rate for each sensor index to 4ms....")
 	# for i in range(interfaceKit.getSensorCount()):
 	#     try:
@@ -120,7 +107,3 @@ def phidgetsLauncher():
 	#         interfaceKit.setDataRate(i, 4)
 	#     except PhidgetException as e:
 	#         print("Phidget Exception %i: %s" % (e.code, e.details))
-
-	# print("Press Enter to quit....")
-
-	# chr = sys.stdin.read(1)
