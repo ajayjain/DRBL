@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+'''
+Author: Ajay Jain
+'''
 
 import Leap, sys, thread, time, math
 

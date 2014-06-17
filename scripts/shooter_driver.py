@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+'''
+Author: Ajay Jain
+Created: 16 June 2014
+'''
 
 #Basic imports
 from ctypes import *
@@ -11,7 +15,7 @@ import phidgets # phidgets.py
 
 def shoot():
     phidgets.interfaceKit.setOutputState(0, 1)
-    rospy.sleep(1)
+    rospy.sleep(0.1)
     phidgets.interfaceKit.setOutputState(0, 0)
 
 def on_message(data):
