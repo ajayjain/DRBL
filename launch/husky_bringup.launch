@@ -15,7 +15,7 @@
 		<param name="port" type="string" value="/dev/ttyACM0"/> 
 		<param name="intensity" type="bool" value="false"/>
 		<!-- <param name="frame_id" value="/base_footprint_rear_bumper_part"/> -->
-		<param name="frame_id" value="/base_footprint_rear_bumper_part"/>
+		<param name="frame_id" value="/base_footprint_front_bumper_part"/>
 	</node>
 
 	<include file="$(find husky_pursuit)/launch/camera.launch" />
