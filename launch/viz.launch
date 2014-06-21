@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Launch file to view a Husky in the odom frame and control it using interactive markers -->
+  <arg name="config" default="navigation" />
+  <node pkg="husky_interactive_markers" name="interactive_markers" type="marker_server">
+    <remap from="cmd_vel" to="husky/cmd_vel"/>
+  </node>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find husky_pursuit)/rviz/$(arg config).rviz" />
+</launch>
