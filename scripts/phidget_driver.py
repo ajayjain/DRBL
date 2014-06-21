@@ -21,44 +21,44 @@ health_msg.data = 6
 lives = []
 
 def shoot():
-    phidgets.interfaceKit.setOutputState(0, 1)
-    rospy.sleep(0.1)
-    phidgets.interfaceKit.setOutputState(0, 0)
+	phidgets.interfaceKit.setOutputState(0, 1)
+	rospy.sleep(0.1)
+	phidgets.interfaceKit.setOutputState(0, 0)
 
 def publish_health():
-    if health_pub is not None:
-        health_pub.publish(health_msg)
+	if health_pub is not None:
+		health_pub.publish(health_msg)
 
 def on_message(data):
-    if data.data:
-        shoot()
+	if data.data:
+		shoot()
 
 def update_health(e):
-    print("phidget_driver InterfaceKit source %i: Input %i: %s" % (e.device.getSerialNum(), e.index, e.state))
-    if e.index < len(lives):
-        lives[e.index] = not e.state
-    print(lives)
-    health_msg.data = lives.count(True)
-    publish_health()
+	print("phidget_driver InterfaceKit source %i: Input %i: %s" % (e.device.getSerialNum(), e.index, e.state))
+	if e.index < len(lives):
+		lives[e.index] = not e.state
+	print(lives)
+	health_msg.data = lives.count(True)
+	publish_health()
 
 def main():
-    global health_pub, lives
+	global health_pub, lives
 
-    rospy.init_node("phidget_driver")
+	rospy.init_node("phidget_driver")
 
-    phidgets.phidgetsLauncher(input_changed_callback=update_health)
-    lives = [True for _ in range(6)]
-    # phidgets.interfaceKit.setOnInputChangeHandler(update_health)
-    
-    rospy.Subscriber("status/fire", Bool, on_message)
-    health_pub = rospy.Publisher("status/health", UInt8)
+	phidgets.phidgetsLauncher(input_changed_callback=update_health)
+	lives = [True for _ in range(6)]
+	# phidgets.interfaceKit.setOnInputChangeHandler(update_health)
+	
+	rospy.Subscriber("status/fire", Bool, on_message)
+	health_pub = rospy.Publisher("status/health", UInt8)
 
-    rospy.spin()
-    
-    print("Closing...")
-    phidgets.closePhidget()
-    print("Done.")
+	rospy.spin()
+	
+	print("Closing...")
+	phidgets.closePhidget()
+	print("Done.")
 
 
 if __name__ == "__main__":
-    main()
+	main()
