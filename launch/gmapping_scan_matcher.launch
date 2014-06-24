@@ -1,31 +1,10 @@
 <launch>
 	<!--include file="$(find husky_pursuit)/launch/husky_bringup.launch" /-->
-	<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 odom_combined
- base_footprint 100" />
-
-	<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" 
-    args="0.25 0.0 0.25 0.0 0.0 0.0 /base_link /laser 40" />
     
     <node pkg="rviz" type="rviz" name="rviz" 
     args="-d $(find laser_scan_matcher)/demo/demo_gmapping.rviz"/>
 
-	<node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
-
-		<!-- Do these work? -->
-		<remap from="encoder" to="odom"/>
-		<remap from="husky/cmd_vel" to="vel"/>
-
-		<!-- Use odometry and a constant velocity model only (no IMU) -->
-		<param name="use_imu" value="false"/>
-
-		<param name="fixed_frame" value="odom_combined"/>
-		<param name="max_iterations" value="10"/>
-
-	</node>
-
-
-	<!--remap from="encoder" to="odom" /-->
-	<!-- <node pkg="topic_tools" type="relay" name="encoder_relay" args="/encoder /odom_combined" /> -->
+    <include file="$(find husky_pursuit)/launch/scan_matcher.launch"/>
 
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <param name="map_udpate_interval" value="1.0"/>
