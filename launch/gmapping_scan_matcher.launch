@@ -4,7 +4,23 @@
     <node pkg="rviz" type="rviz" name="rviz" 
     args="-d $(find laser_scan_matcher)/demo/demo_gmapping.rviz"/>
 
-    <include file="$(find husky_pursuit)/launch/scan_matcher.launch"/>
+  <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" 
+    name="laser_scan_matcher_node" output="screen">
+
+    <!-- Do these work? -->
+    <remap from="odom" to="encoder"/>
+    <remap from="vel" to="husky/cmd_vel"/>
+
+    <!-- Use odometry and a constant velocity model only (no IMU) -->
+    <param name="use_imu" value="false"/>
+    <param name="use_vel" value="true"/>
+
+    <param name="fixed_frame" value="map"/>  # Default: world
+    <param name="base_frame" value="odom_combined"/>  # Default: base_link
+    <param name="publish_tf" value="true"/>    # Default: true
+    <param name="max_iterations" value="10"/>
+
+  </node>
 
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <param name="map_udpate_interval" value="1.0"/>
