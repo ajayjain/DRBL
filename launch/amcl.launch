@@ -1,0 +1,11 @@
+<launch>
+	<node pkg="map_server" type="map_server" name="lab3_map_server" args="/home/ros/catkin_ws/src/husky_pursuit/maps/lab3.yaml">
+
+	<include file="$(find husky_pursuit)/launch/scan_matcher.launch" />
+
+  	<node pkg="tf" type="static_transform_publisher" name="map_world_link" args="0 0 0 0 0 1 /map /world 40" />
+
+	<include file="$(find husky_navigation)/launch/amcl_demo.launch" />
+		<param name="frame_id" value="odom_combined" />
+	</node>
+</launch>

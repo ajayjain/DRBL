@@ -8,11 +8,11 @@
 	<!-- Husky URDFs? Transforms? -->
 	<include file="$(find husky_description)/launch/description.launch" />
 
-	#### publish an example base_link -> laser transform ###########
+	#### publish a base_link -> laser transform ###########
 
-  	<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0.0 0.25 0.0 0.0 0.0 /base_link /laser 40" />
+  	<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 1 /base_link /laser 40" />
 
-  	<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /odom_combined /base_footprint 100" />
+  	<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 1 /odom_combined /base_footprint 100" />
 
 	<!-- <include file="$(find hokuyo_node)/launch/hokuyo_test.launch" /> -->
 	<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
