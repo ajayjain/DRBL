@@ -5,10 +5,19 @@
 
 	<include file="$(find husky_pursuit)/launch/scan_matcher.launch" />
 
-  	<node pkg="tf" type="static_transform_publisher" name="map_world_link" args="0 0 0 0 0 1 /map /world 40" />
+  	<node pkg="tf" type="static_transform_publisher" name="odom_combined_odom_link" args="0 0 0 0 0 0 /odom_combined /odom 100" />
+
+  	<node pkg="tf" type="static_transform_publisher" name="map_world_link" args="0 0 0 0 0 0 /map /world 100" />
 
 	<include file="$(find husky_pursuit)/launch/amcl.launch" />
 
 	<!--- Run Move Base -->
-	<include file="$(find husky_navigation)/launch/move_base.launch" />
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<rosparam file="$(find husky_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="$(find husky_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+		<rosparam file="$(find husky_navigation)/config/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find husky_navigation)/config/global_costmap_params.yaml" command="load" />
+		<rosparam file="$(find husky_navigation)/config/base_local_planner_params.yaml" command="load" />
+		<remap from="cmd_vel" to="husky/cmd_vel" />
+	</node>
 </launch>
