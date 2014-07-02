@@ -1,5 +1,7 @@
 <launch>
+	<arg name="cmd_topic" default="husky/cmd_vel" />
+
 	<node name="leap_control" pkg="husky_pursuit" type="leap_control.py">
-		<remap from="cmd_vel" to="husky/cmd_vel" />
+		<remap from="cmd_vel" to="$(arg cmd_topic)" />
 	</node>
 </launch>

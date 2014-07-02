@@ -28,23 +28,5 @@ ARSENL Lab, Naval Postgraduate School
 			<arg name="robot_name"  value="Robot2" />
 		</include>
 	</group>
-
-	<!-- BEGIN ROBOT 3-->
-	<group ns="robot3">
-		<param name="tf_prefix" value="robot3_tf" />
-		<include file="$(find husky_pursuit)/launch/simul/one_husky.launch" >
-			<arg name="init_pose" value="-x -1 -y 3 -z 0" />
-			<arg name="robot_name"  value="Robot3" />
-		</include>
-	</group>
-
-	<!-- BEGIN ROBOT 4-->
-	<group ns="robot4">
-		<param name="tf_prefix" value="robot4_tf" />
-		<include file="$(find husky_pursuit)/launch/simul/one_husky.launch" >
-			<arg name="init_pose" value="-x -3 -y 3 -z 0" />
-			<arg name="robot_name"  value="Robot4" />
-		</include>
-	</group>
-
+	
 </launch>

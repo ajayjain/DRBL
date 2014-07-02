@@ -6,6 +6,14 @@ ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
 	<include file="$(find husky_teleop)/launch/teleop.launch">
-		<param name="cmd_topic" value="robot1/husky/cmd_vel"/>
+		<arg name="cmd_topic" value="/robot1/husky/cmd_vel"/>
+	</include>
+
+	<!-- <include file="$(find husky_pursuit)/launch/leap_teleop.launch">
+		<arg name="cmd_topic" value="/robot2/husky/cmd_vel"/>
+	</include> -->
+
+	<include file="$(find husky_pursuit)/launch/teleop/key_teleop.launch">
+		<arg name="cmd_topic" value="/robot2/husky/cmd_vel"/>
 	</include>
 </launch>

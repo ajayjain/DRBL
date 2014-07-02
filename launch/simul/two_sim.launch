@@ -9,7 +9,7 @@ ARSENL Lab, Naval Postgraduate School
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
     
-	<include file="$(find husky_pursuit)/launch/simul/robots.launch"/>
+	<include file="$(find husky_pursuit)/launch/simul/robots2.launch"/>
 
 
 	<!-- 

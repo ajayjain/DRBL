@@ -1,7 +1,9 @@
 <launch>
+  <arg name="cmd_topic" default="husky/cmd_vel" />
+
   <node pkg="kobuki_keyop" type="keyop" name="keyop" output="screen">
     <remap from="keyop/motor_power" to="mobile_base/commands/motor_power"/>
-    <remap from="keyop/cmd_vel" to="husky/cmd_vel"/>
+    <remap from="keyop/cmd_vel" to="$(arg cmd_topic)"/>
     <param name="linear_vel_step"  value="0.05" type="double"/>
     <param name="linear_vel_max"   value="1.5"  type="double"/>
     <param name="angular_vel_step" value="0.33" type="double"/>

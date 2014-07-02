@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 1, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<include file="$(find husky_teleop)/launch/teleop.launch">
+		<arg name="cmd_topic" value="/cmd_vel"/>
+	</include>
+
+	<node pkg="topic_tools" type="relay" name="cmd_vel_relay1" args="/cmd_vel /robot1/husky/cmd_vel" />
+	<node pkg="topic_tools" type="relay" name="cmd_vel_relay2" args="/cmd_vel /robot2/husky/cmd_vel" />
+	<node pkg="topic_tools" type="relay" name="cmd_vel_relay3" args="/cmd_vel /robot3/husky/cmd_vel" />
+	<node pkg="topic_tools" type="relay" name="cmd_vel_relay4" args="/cmd_vel /robot4/husky/cmd_vel" />
+
+	<!-- <include file="$(find husky_pursuit)/launch/leap_teleop.launch">
+		<arg name="cmd_topic" value="/robot2/husky/cmd_vel"/>
+	</include> -->
+
+	<!-- <include file="$(find husky_pursuit)/launch/teleop/key_teleop.launch"> -->
+		<!-- <arg name="cmd_topic" value="/robot2/husky/cmd_vel"/> -->
+	<!-- </include> -->
+</launch>

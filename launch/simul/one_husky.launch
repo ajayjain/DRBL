@@ -34,5 +34,5 @@ ARSENL Lab, Naval Postgraduate School
       </rosparam>
     </node>
 
-	<node name="model_spawner" pkg="husky_pursuit" type="model_spawner.sh" args="'$(arg init_pose)' '$(arg robot_name)'" />
+	<!-- <node name="model_spawner" pkg="husky_pursuit" type="model_spawner.sh" args="'$(arg init_pose)' '$(arg robot_name)'" /> -->
 </launch>
