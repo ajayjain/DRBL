@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 1, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<arg name="robot_name" default="-x 1 -y 1 -z 0" />
+	<arg name="init_pose" default="Robot1" />
+
+	<node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model" args="$(arg init_pose) -unpause -urdf -param robot_description -model $(arg robot_name)" output="screen" />
+</launch>

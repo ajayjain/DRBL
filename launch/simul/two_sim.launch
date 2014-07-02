@@ -7,9 +7,10 @@ ARSENL Lab, Naval Postgraduate School
 <launch>
 	<param name="/use_sim_time" value="true" />
 
+    <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+    
 	<include file="$(find husky_pursuit)/launch/simul/robots.launch"/>
 
-    <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
 
 	<!-- 
 	  <node name="gazebo" pkg="gazebo" type="gazebo" 
