@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 1, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<include file="$(find husky_teleop)/launch/teleop.launch">
+		<param name="cmd_topic" value="robot1/husky/cmd_vel"/>
+	</include>
+</launch>

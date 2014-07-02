@@ -9,22 +9,22 @@ ARSENL Lab, Naval Postgraduate School
 	<arg name="init_pose" default="$(optenv ROBOT_INITIAL_POSE)" />
 
 	<!-- Spawn robot in gazebo -->
-	<node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model" 
-		args="$(arg init_pose) -unpause -urdf -param robot_description -model $(arg robot_name)"/>
+	<!-- <node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model" args="$(arg init_pose) -unpause -urdf -param robot_description -model $(arg robot_name)"/> -->
+	<node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model" args="-x 1 -y 1 -z 0 -unpause -urdf -param robot_description -model Robot1"/>
 
 	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
 		<param name="publish_frequency" type="double" value="30.0" />
 	</node>
 
-	<node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
-		<rosparam>
-			freq: 10.0
-			sensor_timeout: 1.0
-			publish_tf: true
-			odom_used: true
-			vo_used: true
-			output_frame: odom
-		</rosparam>
-	</node>
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <rosparam>
+        freq: 10.0
+        sensor_timeout: 1.0
+        publish_tf: true
+        odom_used: true
+        vo_used: true
+        output_frame: odom
+      </rosparam>
+    </node>
 
 </launch>
