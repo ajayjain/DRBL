@@ -5,17 +5,21 @@ July 1, 2014
 ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
+	<arg name="robot1_init_pose" default="-x 1 -y 1 -z 0" />
+	<arg name="robot2_init_pose" default="-x 3 -y 1 -z 0" />
 
 	<!-- No namespace here as we will share this description. 
 		 Access with slash at the beginning -->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find husky_description)/urdf/base.urdf.xacro'" />
+
+  	<node pkg="tf" type="static_transform_publisher" name="odom_to_odom_link" args="2 0 0 0 0 0 /robot1_tf/odom /robot2_tf/odom 100" />
 
 	<!-- http://answers.ros.org/question/41433/multiple-robots-simulation-and-navigation/# -->
 	<!-- BEGIN ROBOT 1-->
 	<group ns="robot1">
 		<param name="tf_prefix" value="robot1_tf" />
 		<include file="$(find husky_pursuit)/launch/simul/one_husky.launch" >
-			<arg name="init_pose" value="-x 1 -y 1 -z 0" />
+			<arg name="init_pose" value="$(arg robot1_init_pose)" />
 			<arg name="robot_name"  value="Robot1" />
 		</include>
 	</group>
@@ -24,9 +28,9 @@ ARSENL Lab, Naval Postgraduate School
 	<group ns="robot2">
 		<param name="tf_prefix" value="robot2_tf" />
 		<include file="$(find husky_pursuit)/launch/simul/one_husky.launch" >
-			<arg name="init_pose" value="-x -3 -y 1 -z 0" />
+			<arg name="init_pose" value="$(arg robot2_init_pose)" />
 			<arg name="robot_name"  value="Robot2" />
 		</include>
 	</group>
-	
+
 </launch>
