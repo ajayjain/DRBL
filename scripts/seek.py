@@ -10,15 +10,20 @@ import geometry_msgs.msg
 # from geometry_msgs.msg import Twist, Vector3
 # from geometry_msgs.msg import PoseWithCovarianceStamped, PoseWithCovariance, Pose, Point
 
+TURN_FACTOR = 4
+LIN_FACTOR	= .8
+MAX_LIN = 1
+# MAX_ANG = 1
+
 def main():
 	rospy.init_node("seek")
 	
 	listener = tf.TransformListener()
 
 	vel = rospy.Publisher('/robot1/husky/cmd_vel', geometry_msgs.msg.Twist)
-	vel2 = rospy.Publisher('/robot2/husky/cmd_vel', geometry_msgs.msg.Twist)
-	cmd2 = geometry_msgs.msg.Twist()
-	cmd2.linear.x = 1
+	# vel2 = rospy.Publisher('/robot2/husky/cmd_vel', geometry_msgs.msg.Twist)
+	# cmd2 = geometry_msgs.msg.Twist()
+	# cmd2.linear.x = 1
 	# cmd2.angular.z = 0.5
 
 	rate = rospy.Rate(10.0)
@@ -30,15 +35,18 @@ def main():
 			print "exception!"
 			continue
 
-		angular = 4 * math.atan2(trans[1], trans[0])
-		linear = .8 * math.sqrt(trans[0] ** 2 + trans[1] ** 2)
+		angular = TURN_FACTOR * math.atan2(trans[1], trans[0])
+
+		linear  = LIN_FACTOR  * math.sqrt(trans[0] ** 2 + trans[1] ** 2)
+		linear  = MAX_LIN if linear > MAX_LIN else linear
+
 		cmd = geometry_msgs.msg.Twist()
 		cmd.linear.x = linear
 		cmd.angular.z = angular
 		print cmd
 		print '\n'
 		vel.publish(cmd)
-		vel2.publish(cmd2)
+		# vel2.publish(cmd2)
 
 		rate.sleep()
 
