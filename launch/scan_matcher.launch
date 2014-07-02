@@ -9,7 +9,7 @@ launch file: launches the scan matcher with Hokuyo data
 
   #### start the laser scan_matcher ##############################
 
-  <!-- <node pkg="topic_tools" type="relay" name="encoder_relay" args="/encoder /odom_combined" /> -->
+  <!-- <node pkg="topic_tools" type="relay" name="encoder_relay" args="/encoder /odom" /> -->
 
   <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" 
     name="laser_scan_matcher_node" output="screen">
@@ -23,7 +23,7 @@ launch file: launches the scan matcher with Hokuyo data
     <param name="use_vel" value="true"/>
 
     <param name="fixed_frame" value="world"/>  # Default: world
-    <param name="base_frame" value="odom_combined"/>  # Default: base_link
+    <param name="base_frame" value="odom"/>  # Default: base_link
     <param name="publish_tf" value="true"/>    # Default: true
     <param name="max_iterations" value="10"/>
 

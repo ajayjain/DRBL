@@ -16,7 +16,7 @@
     <param name="use_vel" value="true"/>
 
     <param name="fixed_frame" value="map"/>  # Default: world
-    <param name="base_frame" value="odom_combined"/>  # Default: base_link
+    <param name="base_frame" value="odom"/>  # Default: base_link
     <param name="publish_tf" value="true"/>    # Default: true
     <param name="max_iterations" value="10"/>
 
