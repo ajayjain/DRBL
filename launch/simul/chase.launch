@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 1, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<node pkg="husky_pursuit" type="seek.py" name="seek_node">
+		<param name="cmd_topic" value="/robot1/husky/cmd_vel" />
+	</node>
+
+	<node pkg="husky_pursuit" type="wander.py" name="wander_node">
+		<param name="cmd_topic" value="/robot2/husky/cmd_vel" />
+	</node>
+</launch>
