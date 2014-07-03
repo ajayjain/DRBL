@@ -17,11 +17,12 @@ import rospy, tf, math
 import geometry_msgs.msg
 
 import get_data
+from utils import *
 
 # TURN_FACTOR = rospy.get_param('~angular_vel_factor', 4)
 
 LIN_FACTOR	= rospy.get_param('~linear_vel_factor', .2)
-MAX_LIN = rospy.get_param('~max_linear_velocity', 1)
+MAX_LIN = rospy.get_param('~max_linear_velocity', 0.8)
 MAX_ANG = rospy.get_param('~max_angular_velocity', math.pi/2)
 
 CMD_TOPIC = rospy.get_param('~cmd_topic', '/cmd_vel')
@@ -31,8 +32,7 @@ USE_TRANSFORMS = rospy.get_param('~use_transforms', False)
 # Given an x,y,z (z = 0) translation, return a linear and angular Twist velocity to reach target
 # Translation needs to be a list or tuple of format (x, y, ...) or [x, y, ...]
 def seek(translation):
-	translation = get_data.normalize(translation)
-	translation = get_data.scalar_mult(translation, MAX_LIN)
+	translation = mult(normalize(translation), MAX_LIN)
 	translation[2] = 0
 
 	angular = math.atan2(translation[1], translation[0])
@@ -62,11 +62,9 @@ def main():
 		trans = get_data.gazebo_translation()
 
 		if trans is not None:
-			cmd_vel = seek(trans)
 			print "seeker translation: ", trans
-			# print "seeker cmd_vel    : ", cmd_vel
-
-			print cmd_vel.linear.x, '\t', cmd_vel.angular.z
+			cmd_vel = seek(trans)
+			print "seeker velocity: ", cmd_vel.linear.x, 'm/sec, ', cmd_vel.angular.z, '(units?)'
 			vel_pub.publish(cmd_vel)
 
 		rate.sleep()

@@ -44,16 +44,6 @@ def transforms_translation(listener):
 		print "transforms exception: %s"%e
 		return None
 
-def normalize(vec):
-	mag = magnitude(vec)
-	return [comp / mag for comp in vec]
-
-def magnitude(vec):
-	added = sum([comp ** 2 for comp in vec])
-	return math.sqrt(added)
-
-def scalar_mult(vec, const):
-	return [const * comp for comp in vec]
 
 if __name__=="__main__":
 	rospy.init_node('get_data')

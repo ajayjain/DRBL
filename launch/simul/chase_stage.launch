@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 3, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+  	<node pkg="tf" type="static_transform_publisher" name="odom_odom_link" args="4 0 0 0 0 0 /robot_0/odom /robot_1/odom 100" />
+
+  	<group ns="robot_0">
+		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<param name="linear_vel_max" value="1" />
+			<param name="angular_vel_max" value="0.2" />
+		</node>
+	</group>
+
+	<!-- <node pkg="husky_pursuit" type="serpentine.py" name="serpentine_node">
+		<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+		<param name="linear_vel_max" value="0.5" />
+		<param name="angular_vel_max" value="1.57" />
+	</node> -->
+
+  	<group ns="robot_1">
+		<node pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen">
+			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+			<param name="linear_vel_max" value="0.5" />
+			<param name="angular_vel_max" value="1.57" />
+		</node>
+	</group>
+
+	<!-- <include file="$(find husky_teleop)/launch/teleop.launch">
+		<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
+	</include> -->
+</launch>

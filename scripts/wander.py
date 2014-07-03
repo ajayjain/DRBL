@@ -9,12 +9,20 @@ import math, random
 
 import rospy, tf
 import geometry_msgs.msg
-from seek import seek
+from pure_seek import seek
 
 CMD_TOPIC = rospy.get_param('~cmd_topic', '/cmd_vel')
 CMD_FREQ  = 10.0
 SECONDS_PER_TRANSLATION = 2
 LOOP_ON_ITER = SECONDS_PER_TRANSLATION * CMD_FREQ
+
+MAX_LIN = 0.8
+MAX_ANG = math.pi/2
+
+def get_params():
+	global MAX_LIN, MAX_ANG
+	MAX_LIN = rospy.get_param('~linear_vel_max',  MAX_LIN)
+	MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
 
 def random_translation():
 	x = random.uniform(-10, 10)
@@ -36,15 +44,14 @@ def main():
 			count = 0
 		count += 1
 
-		cmd_vel = seek(trans)
-		print cmd_vel.linear.x, '\t', cmd_vel.angular.z
-		# vel_pub.publish(cmd_vel)
+		get_params()
 
-		twist = geometry_msgs.msg.Twist()
-		twist.linear.x = 0.6
-		twist.angular.z = 0.2
-		vel_pub.publish(twist)
-		
+		cmd = seek(trans, MAX_LIN, MAX_ANG)
+		rospy.loginfo('linear vel: %f', cmd.linear.x)
+		rospy.loginfo('angular vel: %f', cmd.angular.z)
+
+		vel_pub.publish(cmd)
+
 		rate.sleep()
 
 

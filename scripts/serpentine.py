@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 '''
 Ajay Jain
-July 1, 2014
+July 2, 2014
 ARSENL Lab, Naval Postgraduate School
 '''
 
@@ -12,7 +12,7 @@ import geometry_msgs.msg
 from seek import seek
 
 MAX_ANGULAR = math.pi/2
-MAX_LINEAR  = 1
+MAX_LINEAR  = 0.6
 
 CMD_TOPIC = rospy.get_param('~cmd_topic', '/cmd_vel')
 CMD_FREQ  = 10.0
