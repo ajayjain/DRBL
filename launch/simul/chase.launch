@@ -5,16 +5,16 @@ July 1, 2014
 ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
-	<node pkg="husky_pursuit" type="seek.py" name="seek_node">
-		<remap from="/seek_cmd_vel" to="/robot1/husky/cmd_vel"/>
+	<node pkg="husky_pursuit" type="seek.py" name="seek_node" output="screen">
+		<remap from="/cmd_vel" to="/robot1/husky/cmd_vel"/>
 		<!-- <param name="cmd_topic" value="/robot1/husky/cmd_vel" /> -->
 	</node>
 
 	<!-- <node pkg="husky_pursuit" type="wander.py" name="wander_node">
-		<remap from="/wander_cmd_vel" to="/robot2/husky/cmd_vel"/>
+		<remap from="/cmd_vel" to="/robot2/husky/cmd_vel"/>
 	</node>-->
 
 	<node pkg="husky_pursuit" type="serpentine.py" name="wander_node">
-		<remap from="/serpentine_cmd_vel" to="/robot2/husky/cmd_vel"/>
+		<!-- <remap from="/cmd_vel" to="/robot2/husky/cmd_vel"/> -->
 	</node>
 </launch>

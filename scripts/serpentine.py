@@ -14,7 +14,7 @@ from seek import seek
 MAX_ANGULAR = math.pi/2
 MAX_LINEAR  = 1
 
-CMD_TOPIC = rospy.get_param('~cmd_topic', '/serpentine_cmd_vel')
+CMD_TOPIC = rospy.get_param('~cmd_topic', '/cmd_vel')
 CMD_FREQ  = 10.0
 
 SECONDS_PER_DIR = 2

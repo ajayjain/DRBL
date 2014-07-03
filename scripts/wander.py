@@ -11,7 +11,7 @@ import rospy, tf
 import geometry_msgs.msg
 from seek import seek
 
-CMD_TOPIC = rospy.get_param('~cmd_topic', '/wander_cmd_vel')
+CMD_TOPIC = rospy.get_param('~cmd_topic', '/cmd_vel')
 CMD_FREQ  = 10.0
 SECONDS_PER_TRANSLATION = 2
 LOOP_ON_ITER = SECONDS_PER_TRANSLATION * CMD_FREQ
