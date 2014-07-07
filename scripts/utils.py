@@ -6,6 +6,7 @@ ARSENL Lab, Naval Postgraduate School
 '''
 
 import math
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 # ARRAY "VECTOR" OPERATIONS
 
@@ -28,9 +29,36 @@ def add(vec1, vec2):
 	# the return array length is equal to the minimum of the two inputs
 	return [e1 + e2 for (e1, e2) in zip(vec1, vec2)]
 
-def extrapolate_twist(vel, secs):
-	dist  = vel.linear.x * secs
-	angle = vel.angular.z * sec
+def pose_translation(own_pose, target_pose):
+	dx = target_pose.position.x - own_pose.position.x
+	dy = target_pose.position.y - own_pose.position.y
+	dz = target_pose.position.z - own_pose.position.z
+	return [dx, dy, dz]
+
+def extrapolate(pose, vel, secs):
+	dist = vel.linear.x * secs
+	dtheta = vel.angular.z * sec
+
+	(w, x, y, z) = pose.orientation
+	euler = euler_from_quaternion([w, x, y, z])
+	theta_f = dtheta + euler[2]
+	euler[2] = theta_f
+
+	return extend_pose(pose, dist, euler)
+
+def extend_pose(pose, dist, euler_orientation_f):
+	theta_f = euler_orientation_f[2]
+	pose.position.x += dist * math.cos(theta_f)
+	pose.position.y += dist * math.sin(theta_f)
+
+	quat = quaternion_from_euler(euler_orientation_f)
+	pose.orientation.w = quat[0]
+	pose.orientation.w = quat[1]
+	pose.orientation.w = quat[2]
+	pose.orientation.w = quat[3]
+
+	return pose # original object was modified, but let's return it anyway
+
 
 # OTHER UTILS
 

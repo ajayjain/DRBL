@@ -23,11 +23,15 @@ def get_params():
 	global MAX_LIN, MAX_ANG, FRAME1_PREFIX, FRAME2_PREFIX, frame1, frame2
 	MAX_LIN = rospy.get_param('~linear_vel_max',  MAX_LIN)
 	MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
-	FRAME1_PREFIX = rospy.get_param('~robot1_tf_prefix', FRAME1_PREFIX)
-	FRAME2_PREFIX = rospy.get_param('~robot2_tf_prefix', FRAME2_PREFIX)
+	FRAME1_PREFIX = rospy.get_param('~own_tf_prefix', FRAME1_PREFIX)
+	FRAME2_PREFIX = rospy.get_param('~target_tf_prefix', FRAME2_PREFIX)
 	frame1 = FRAME1_PREFIX + '/base_footprint'
 	frame2 = FRAME2_PREFIX + '/base_footprint'
 
+	print "MAX_LIN, MAX_ANG"
+	print MAX_LIN, MAX_ANG
+	print "frame1, frame2"
+	print frame1, frame2
 
 def seek(translation, maxlin, maxang):
 	trans = mult(normalize(translation), maxlin)
@@ -44,7 +48,6 @@ def seek(translation, maxlin, maxang):
 
 	return cmd
 
-
 def main():
 	rospy.init_node("seek")
 	
@@ -54,6 +57,7 @@ def main():
 
 	rate = rospy.Rate(10.0)
 	while not rospy.is_shutdown():
+		print 'getting params'
 		get_params()
 
 		try:

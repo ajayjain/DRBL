@@ -20,8 +20,15 @@ CMD_FREQ  = 10.0
 SECONDS_PER_DIR = 2
 SWITCH_ON_ITER = SECONDS_PER_DIR * CMD_FREQ
 
+def get_params():
+	global MAX_LINEAR, MAX_ANGULAR
+
+	MAX_LINEAR = rospy.get_param('~linear_vel_max',  MAX_LINEAR)
+	MAX_ANGULAR = rospy.get_param('~angular_vel_max', MAX_ANGULAR)
+
+
 def main():
-	rospy.init_node("serpentine_node")
+	rospy.init_node("serpentine")
 
 	vel_pub = rospy.Publisher(CMD_TOPIC, geometry_msgs.msg.Twist)
 	cmd_vel = geometry_msgs.msg.Twist()
