@@ -29,6 +29,16 @@ def add(vec1, vec2):
 	# the return array length is equal to the minimum of the two inputs
 	return [e1 + e2 for (e1, e2) in zip(vec1, vec2)]
 
+# vec is [x, y...] (remainder preserved), radians is the positive or negative angle
+def rotate(vec, radians):
+	x, y = vec[0], vec[1]
+	r = math.hypot(x, y)
+	theta_0 = math.atan2(y, x)
+	theta_f = theta_0 - radians
+	xf = r * math.cos(theta_f)
+	yf = r * math.sin(theta_f)
+	return [xf, yf] + vec[2:]
+
 # ETRAPOLATION, POSE, TWIST METHODS
 
 def pose_translation(own_pose, target_pose):
@@ -55,6 +65,10 @@ def extend_pose(pose, dist, euler_orientation_f):
 
 	return ((x, y, z), tuple(quat))
 
+def get_yaw(pose):
+	quat = pose[1]
+	euler = euler_from_quaternion(quat)
+	return euler[2]
 
 # OTHER UTILS
 

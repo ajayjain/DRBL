@@ -9,8 +9,8 @@ ARSENL Lab, Naval Postgraduate School
 		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen">
 			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
 
-			<param name="linear_vel_max" value=".8" />
-			<param name="angular_vel_max" value="1" />
+			<param name="linear_vel_max" value="1" />
+			<param name="angular_vel_max" value="1.57" />
 			<param name="target_tf_prefix" value="/robot_1" />
 		</node>
 	</group>

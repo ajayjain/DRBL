@@ -6,6 +6,8 @@ ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
 
+	<param name="/use_sim_time" value="true" />
+
 	<node pkg="stage_ros" type="stageros" name="square_stage_two_robots" args="$(find husky_pursuit)/worlds/square.world" />
 
   	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />

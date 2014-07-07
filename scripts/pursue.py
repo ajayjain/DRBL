@@ -45,15 +45,22 @@ def get_params():
 	CONSTANT_TIME_EXTRAPOLATION = rospy.get_param('~extrapolate_with_constant_time', CONSTANT_TIME_EXTRAPOLATION)
 	EXTRAPOLATION_TIME = rospy.get_param('~extrapolation_time', EXTRAPOLATION_TIME)
 
+
 def pursue(own_pose, target_pose, target_vel, extrapolation_time, maxlin, maxang):
 	future_target_pose = extrapolate(target_pose, target_vel, extrapolation_time)
 	translation = pose_translation(own_pose, future_target_pose)
+
+	yaw = get_yaw(own_pose)
+	relative_translation = rotate(translation, yaw)
+
 	print "own_pose", own_pose
 	print "target_pose", target_pose
 	print "target_vel", target_vel
 	print "future_target_pose", future_target_pose
-	print "translation", translation
-	return seek(translation, maxlin, maxang)
+	print "global translation", translation
+	print "relative translation", relative_translation
+
+	return seek(relative_translation, maxlin, maxang)
 
 def on_own_odom(odom):
 	global own_pose
