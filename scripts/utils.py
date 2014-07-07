@@ -29,35 +29,31 @@ def add(vec1, vec2):
 	# the return array length is equal to the minimum of the two inputs
 	return [e1 + e2 for (e1, e2) in zip(vec1, vec2)]
 
+# ETRAPOLATION, POSE, TWIST METHODS
+
 def pose_translation(own_pose, target_pose):
-	dx = target_pose.position.x - own_pose.position.x
-	dy = target_pose.position.y - own_pose.position.y
-	dz = target_pose.position.z - own_pose.position.z
-	return [dx, dy, dz]
+	return [tp - op for (tp, op) in zip(target_pose[0], own_pose[0])]
 
 def extrapolate(pose, vel, secs):
 	dist = vel.linear.x * secs
-	dtheta = vel.angular.z * sec
+	dtheta = vel.angular.z * secs
 
-	(w, x, y, z) = pose.orientation
-	euler = euler_from_quaternion([w, x, y, z])
+	quat = pose[1]
+	euler = euler_from_quaternion(quat)
 	theta_f = dtheta + euler[2]
-	euler[2] = theta_f
+	euler = (euler[0], euler[1], theta_f)
 
 	return extend_pose(pose, dist, euler)
 
 def extend_pose(pose, dist, euler_orientation_f):
 	theta_f = euler_orientation_f[2]
-	pose.position.x += dist * math.cos(theta_f)
-	pose.position.y += dist * math.sin(theta_f)
+	x = pose[0][0] + dist * math.cos(theta_f)
+	y = pose[0][1] + dist * math.sin(theta_f)
+	z = pose[0][2]
 
-	quat = quaternion_from_euler(euler_orientation_f)
-	pose.orientation.w = quat[0]
-	pose.orientation.w = quat[1]
-	pose.orientation.w = quat[2]
-	pose.orientation.w = quat[3]
+	quat = quaternion_from_euler(euler_orientation_f[0], euler_orientation_f[1], theta_f)
 
-	return pose # original object was modified, but let's return it anyway
+	return ((x, y, z), tuple(quat))
 
 
 # OTHER UTILS

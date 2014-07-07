@@ -36,10 +36,11 @@ def get_params():
 def seek(translation, maxlin, maxang):
 	trans = mult(normalize(translation), maxlin)
 
-	angular = math.atan2(trans[1], trans[0])
+	angular = math.atan2(trans[1], trans[0]) # tan inverse(y, x) -> radians from positive x axis, [-pi, pi]
 	angular = truncate(angular, maxang)
 
-	linear  = math.sqrt(trans[0] ** 2 + trans[1] ** 2)
+	linear  = math.hypot(trans[0], trans[1]) # sqrt(x^2 + y^2)
+	# linear  = math.sqrt(trans[0] ** 2 + trans[1] ** 2) # sqrt(x^2 + y^2)
 	linear  = truncate(linear, maxlin)
 
 	cmd = geometry_msgs.msg.Twist()

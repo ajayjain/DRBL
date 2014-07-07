@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 7, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+  	<group ns="robot_0">
+		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+
+			<param name="linear_vel_max" value=".8" />
+			<param name="angular_vel_max" value="1" />
+			<param name="target_tf_prefix" value="/robot_1" />
+		</node>
+	</group>
+
+
+
+  	<group ns="robot_1">
+		<include file="$(find husky_teleop)/launch/teleop.launch">
+			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
+		</include>
+		<!-- <node pkg="husky_pursuit" type="serpentine.py" name="serpentine_node">
+			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+
+			<param name="linear_vel_max" value="0.8" />
+			<param name="angular_vel_max" value="1" />
+		</node> -->
+	</group>
+
+  	<group ns="robot_2">
+		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node">
+			<remap from="/cmd_vel" to="/robot_2/cmd_vel"/>
+
+			<param name="linear_vel_max" value="0.5" />
+			<param name="angular_vel_max" value="1" />
+			<param name="own_tf_prefix" value="/robot_2" />
+			<param name="target_tf_prefix" value="/robot_1" />
+		</node>
+	</group>
+</launch>

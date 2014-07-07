@@ -53,8 +53,8 @@ window
 ( 
   size [ 1855 1056 ] 
 
-  rotate [ 38.000 -114.500 ]
-  scale 34.522
+  rotate [ 0.000 0.000 ]
+  scale 21.435
 )
 
 # load an environment bitmap
@@ -62,11 +62,15 @@ floorplan
 ( 
   name "square"
   bitmap "square.png"
-  size [80.000 80.000 2.000]
+  size [160.000 160.000 2.000]
   pose [ 0.000 0.000 0.000 0.000 ]
 )
 
-# throw in a robot
-husky( pose [ 1.000 1.000 0.000 0.000 ] name "robot0" color "blue")
-husky( pose [ 5.000 1.000 0.000 0.000 ] name "robot1" color "red")
-#husky( pose [ -13.924 25.020 0 180.000 ] color "red")
+# throw in the robots
+#husky( pose [ 1 0 0.000 0 ] name "robot0" color "blue")
+#husky( pose [ 5 0 0.000 0 ] name "robot1" color "red")
+#husky( pose [ 3 5 0.000 0.000 ] name "robot3" color "orange")
+
+husky( pose [ 1 0 0.000 0 ] name "robot0" color "blue")
+husky( pose [ 5 0 0.000 0 ] name "robot1" color "red")
+husky( pose [ 3 5 0.000 0.000 ] name "robot3" color "orange")

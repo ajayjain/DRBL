@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 3, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+  	<group ns="robot_0">
+		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<param name="linear_vel_max" value="0.5" />
+			<param name="angular_vel_max" value="0.3" />
+		</node>
+
+		<!-- <node pkg="husky_pursuit" type="pure_flee.py" name="flee_node">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<param name="linear_vel_max" value="1" />
+			<param name="angular_vel_max" value="0.2" />
+		</node> -->
+	</group>
+
+  	<group ns="robot_1">
+		<node pkg="husky_pursuit" type="serpentine.py" name="serpentine_node">
+			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+			<param name="linear_vel_max" value="0.8" />
+			<param name="angular_vel_max" value="1.57" />
+		</node>
+	</group>
+</launch>

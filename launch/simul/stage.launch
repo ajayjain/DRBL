@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 7, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+
+	<node pkg="stage_ros" type="stageros" name="square_stage_two_robots" args="$(find husky_pursuit)/worlds/square.world" />
+
+  	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />
+
+  	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="5 0 0 0 0 0 /world /robot_1/odom 100" />
+
+  	<node pkg="tf" type="static_transform_publisher" name="world_odom2_link" args="3 5 0 0 0 0 /world /robot_2/odom 100" />
+
+</launch>
