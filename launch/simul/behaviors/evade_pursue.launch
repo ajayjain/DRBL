@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 7, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+  	<group ns="robot_0">
+		<node pkg="husky_pursuit" type="evade.py" name="evade_node" output="screen">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<remap from="/own_odom" to="/robot_0/odom"/>
+			<remap from="/target_odom" to="/robot_1/odom"/>
+
+			<param name="linear_vel_max" value=".6" />
+			<param name="angular_vel_max" value="1" />
+			<!-- <param name="extrapolation_time" value="5" /> -->
+			<param name="extrapolate_with_constant_time" type="boolean" value="false" />
+
+
+			<param name="own_tf_prefix" value="/robot_0" />
+			<param name="target_tf_prefix" value="/robot_1" />
+		</node>
+	</group>
+
+
+
+  	<group ns="robot_1">
+		<!-- <include file="$(find husky_teleop)/launch/teleop.launch">
+			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
+		</include> -->
+		<node pkg="husky_pursuit" type="pursue.py" name="pursue_node">
+			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+			<remap from="/own_odom" to="/robot_1/odom"/>
+			<remap from="/target_odom" to="/robot_0/odom"/>
+
+			<param name="linear_vel_max" value=".8" />
+			<param name="angular_vel_max" value=".8" />
+			<param name="own_tf_prefix" value="/robot_1" />
+			<param name="target_tf_prefix" value="/robot_0" />
+
+		</node>
+	</group>
+
+  	<group ns="robot_2">
+
+	</group>
+</launch>

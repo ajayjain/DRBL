@@ -5,7 +5,7 @@ July 3, 2014
 ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
-  	<node pkg="tf" type="static_transform_publisher" name="odom_odom_link" args="4 0 0 0 0 0 /robot_0/odom /robot_1/odom 100" />
+  	<!-- <node pkg="tf" type="static_transform_publisher" name="odom_odom_link" args="4 0 0 0 0 0 /robot_0/odom /robot_1/odom 100" /> -->
 
   	<group ns="robot_0">
 		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node">
