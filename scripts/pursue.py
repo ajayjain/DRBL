@@ -48,8 +48,9 @@ def get_params():
 
 def pursue(own_pose, target_pose, target_vel, maxlin, maxang, extrapolation_time=None):
 	if extrapolation_time is None:
-		distance = distance(own_pose, target_pose)
-		extrapolation_time = distance / MAX_LIN
+		dist = pose_distance(own_pose, target_pose)
+		extrapolation_time = dist / MAX_LIN
+		print "dist", dist
 
 	future_target_pose = extrapolate(target_pose, target_vel, extrapolation_time)
 	translation = pose_translation(own_pose, future_target_pose)
@@ -57,6 +58,8 @@ def pursue(own_pose, target_pose, target_vel, maxlin, maxang, extrapolation_time
 	yaw = get_yaw(own_pose)
 	relative_translation = rotate(translation, yaw)
 
+	print "CONSTANT_TIME_EXTRAPOLATION", CONSTANT_TIME_EXTRAPOLATION
+	print "extrapolation_time", extrapolation_time
 	print "own_pose", own_pose
 	print "target_pose", target_pose
 	print "target_vel", target_vel
