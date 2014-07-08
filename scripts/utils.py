@@ -74,6 +74,16 @@ def get_yaw(pose):
 	euler = euler_from_quaternion(quat)
 	return euler[2]
 
+def xy_to_rtheta(vec):
+	r = math.hypot(vec[0], vec[1])
+	theta = math.atan2(vec[1], vec[0])
+	return [r, theta]
+
+def rtheta_to_xy(vec):
+	x = vec[0] * math.cos(vec[1])
+	y = vec[0] * math.sin(vec[1])
+	return [x, y]
+
 # OTHER UTILS
 
 def truncate(val, max_val):

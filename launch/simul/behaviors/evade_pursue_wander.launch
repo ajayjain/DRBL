@@ -36,7 +36,7 @@ ARSENL Lab, Naval Postgraduate School
 		<!-- <include file="$(find husky_teleop)/launch/teleop.launch">
 			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
 		</include> -->
-		<node pkg="husky_pursuit" type="pursue.py" name="pursue_node">
+		<node pkg="husky_pursuit" type="offset_pursue.py" name="pursue_node">
 			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
 			<remap from="/own_odom" to="/robot_1/odom"/>
 			<remap from="/target_odom" to="/robot_0/odom"/>
@@ -45,7 +45,9 @@ ARSENL Lab, Naval Postgraduate School
 			<param name="angular_vel_max" value="1" />
 			<param name="own_tf_prefix" value="/robot_1" />
 			<param name="target_tf_prefix" value="/robot_2" />
+			<param name="target_tf_prefix" value="/robot_2" />
 
+			<param name="pursuit_offset" value="5" />
 		</node>
 	</group>
 
