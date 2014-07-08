@@ -26,6 +26,15 @@ define husky position
   hokuyo(pose [ 0.000 0.000 -0.100 0.000 ])
 )
 
+define smallhusky position
+(
+  size [0.099 0.067 0.039]
+  origin [0.000 0.000 0.000 0.000]
+  gui_nose 1
+  drive "diff"
+  hokuyo(pose [ 0.000 0.000 -0.100 0.000 ])
+)
+
 define floorplan model
 (
   # sombre, sensible, artistic

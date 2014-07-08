@@ -44,6 +44,10 @@ def rotate(vec, radians):
 def pose_translation(own_pose, target_pose):
 	return [tp - op for (tp, op) in zip(target_pose[0], own_pose[0])]
 
+def distance(pose1, pose2):
+	trans = pose_translation(pose1, pose2)
+	return math.hypot(trans[0], trans[1])
+
 def extrapolate(pose, vel, secs):
 	dist = vel.linear.x * secs
 	dtheta = vel.angular.z * secs

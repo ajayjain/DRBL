@@ -46,7 +46,11 @@ def get_params():
 	EXTRAPOLATION_TIME = rospy.get_param('~extrapolation_time', EXTRAPOLATION_TIME)
 
 
-def pursue(own_pose, target_pose, target_vel, extrapolation_time, maxlin, maxang):
+def pursue(own_pose, target_pose, target_vel, maxlin, maxang, extrapolation_time=None):
+	if extrapolation_time is None:
+		distance = distance(own_pose, target_pose)
+		extrapolation_time = distance / MAX_LIN
+
 	future_target_pose = extrapolate(target_pose, target_vel, extrapolation_time)
 	translation = pose_translation(own_pose, future_target_pose)
 
@@ -93,8 +97,13 @@ def main():
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
 			rospy.loginfo("tf exception!")
 			continue
+			
+		if CONSTANT_TIME_EXTRAPOLATION:
+			cmd = pursue(own_pose, target_pose, target_vel, MAX_LIN, MAX_ANG, extrapolation_time=EXTRAPOLATION_TIME)
+		else:
+			cmd = pursue(own_pose, target_pose, target_vel, MAX_LIN, MAX_ANG) # dynamically determine extrapolation time
 
-		cmd = pursue(own_pose, target_pose, target_vel, EXTRAPOLATION_TIME, MAX_LIN, MAX_ANG)
+
 		print "cmd_vel", cmd
 		print '\n'
 		# rospy.loginfo('linear vel: %f', cmd.linear.x)

@@ -30,6 +30,8 @@ def get_params():
 def main():
 	rospy.init_node("serpentine")
 
+	get_params()
+
 	vel_pub = rospy.Publisher(CMD_TOPIC, geometry_msgs.msg.Twist)
 	cmd_vel = geometry_msgs.msg.Twist()
 	cmd_vel.linear.x = MAX_LINEAR
@@ -41,6 +43,7 @@ def main():
 	delta = 2 * MAX_ANGULAR / SWITCH_ON_ITER
 
 	while not rospy.is_shutdown():
+
 		if count == SWITCH_ON_ITER:
 			delta = delta * -1
 			count = 0

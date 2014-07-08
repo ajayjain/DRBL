@@ -11,7 +11,7 @@ ARSENL Lab, Naval Postgraduate School
 			<remap from="/own_odom" to="/robot_0/odom"/>
 			<remap from="/target_odom" to="/robot_1/odom"/>
 
-			<param name="linear_vel_max" value=".6" />
+			<param name="linear_vel_max" value=".8" />
 			<param name="angular_vel_max" value="1" />
 			<param name="extrapolation_time" value="5" />
 
@@ -28,14 +28,14 @@ ARSENL Lab, Naval Postgraduate School
 		</include>
 	</group>
 
-  	<!-- <group ns="robot_2">
-		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node">
+  	<group ns="robot_2">
+		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node">
 			<remap from="/cmd_vel" to="/robot_2/cmd_vel"/>
 
-			<param name="linear_vel_max" value="0.5" />
+			<param name="linear_vel_max" value=".8" />
 			<param name="angular_vel_max" value="1" />
 			<param name="own_tf_prefix" value="/robot_2" />
 			<param name="target_tf_prefix" value="/robot_1" />
 		</node>
-	</group> -->
+	</group>
 </launch>

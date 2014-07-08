@@ -11,7 +11,7 @@ ARSENL Lab, Naval Postgraduate School
 			<remap from="/own_odom" to="/robot_0/odom"/>
 			<remap from="/target_odom" to="/robot_1/odom"/>
 
-			<param name="linear_vel_max" value=".6" />
+			<param name="linear_vel_max" value=".8" />
 			<param name="angular_vel_max" value="1" />
 			<param name="extrapolation_time" value="5" />
 
@@ -23,9 +23,14 @@ ARSENL Lab, Naval Postgraduate School
 
 
   	<group ns="robot_1">
-		<include file="$(find husky_teleop)/launch/teleop.launch">
+		<!-- <include file="$(find husky_teleop)/launch/teleop.launch">
 			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
-		</include>
+		</include> -->
+		<node pkg="husky_pursuit" type="serpentine.py" name="serpentine_node">
+			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+			<param name="linear_vel_max" value="0.8" />
+			<param name="angular_vel_max" value="1.57" />
+		</node>
 	</group>
 
   	<!-- <group ns="robot_2">
