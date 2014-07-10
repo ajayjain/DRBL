@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 9, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+
+	<arg name="frame_id" default="base_laser_link" />
+	<arg name="topic_prefix" default="" />
+
+	<node pkg="laser_scan_splitter" type="laser_scan_splitter_node" name="$(anon laser_scan_splitter_node)" output="screen">
+		<!-- <param name="sizes" value="360 360 360" /> -->
+		<param name="topics" value="$(arg topic_prefix)scan_0 $(arg topic_prefix)scan_1" />
+		<!-- <param name="topics" value="$(arg topic_prefix)scan_1 $(arg topic_prefix)scan_2 $(arg topic_prefix)scan_3" /> -->
+		<!-- <param name="frames" value="$(arg frame_id) $(arg frame_id) $(arg frame_id)" /> -->
+	</node>
+
+</launch>

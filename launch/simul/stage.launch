@@ -10,10 +10,68 @@ ARSENL Lab, Naval Postgraduate School
 
 	<node pkg="stage_ros" type="stageros" name="square_stage_two_robots" args="$(find husky_pursuit)/worlds/square.world" />
 
-  	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />
 
-  	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="5 0 0 0 0 0 /world /robot_1/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="5 0 0 0 0 0 /world /robot_1/odom 100" />
 
-  	<node pkg="tf" type="static_transform_publisher" name="world_odom2_link" args="3 5 0 0 0 0 /world /robot_2/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom2_link" args="3 5 0 0 0 0 /world /robot_2/odom 100" />
+
+	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01">
+		<param name="own_tf_prefix" value="robot_0" />
+		<param name="target_tf_prefix" value="robot_1" />
+		<remap from="target_relative" to="/robot_0/relative1" />
+	</node>
+
+	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_02">
+		<param name="own_tf_prefix" value="robot_0" />
+		<param name="target_tf_prefix" value="robot_2" />
+		<remap from="target_relative" to="/robot_0/relative2" />
+	</node>
+
+	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10">
+		<param name="own_tf_prefix" value="robot_1" />
+		<param name="target_tf_prefix" value="robot_0" />
+		<remap from="target_relative" to="/robot_1/relative0" />
+	</node>
+
+	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_12">
+		<param name="own_tf_prefix" value="robot_1" />
+		<param name="target_tf_prefix" value="robot_2" />
+		<remap from="target_relative" to="/robot_1/relative2" />
+	</node>
+
+	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_20">
+		<param name="own_tf_prefix" value="robot_2" />
+		<param name="target_tf_prefix" value="robot_0" />
+		<remap from="target_relative" to="/robot_2/relative0" />
+	</node>
+
+	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_21">
+		<param name="own_tf_prefix" value="robot_2" />
+		<param name="target_tf_prefix" value="robot_1" />
+		<remap from="target_relative" to="/robot_2/relative1" />
+	</node>
+
+	<!-- <node pkg="laser_scan_splitter" type="laser_scan_splitter_node" name="$(anon laser_scan_splitter_node)" output="screen">
+		<remap from="scan" to="/robot_0/base_scan" />
+	</node> -->
+
+<!-- 	<include file="$(find husky_pursuit)/launch/laser_splitter.launch">
+		<arg name="frame_id" value="/robot_0/base_laser_link" />
+		<arg name="topic_prefix" value="/robot_0/" />
+		<remap from="scan" to="/robot_0/base_scan" />
+	</include> -->
+
+<!-- 	<include file="$(find husky_pursuit)/launch/laser_splitter.launch">
+		<arg name="frame_id" value="/robot_1/base_laser_link" />
+		<arg name="topic_prefix" value="/robot_1/" />
+		<remap from="scan" to="/robot_1/base_scan" />
+	</include>
+
+	<include file="$(find husky_pursuit)/launch/laser_splitter.launch">
+		<arg name="frame_id" value="/robot_1/base_laser_link" />
+		<arg name="topic_prefix" value="/robot_1/" />
+		<remap from="scan" to="/robot_2/base_scan" />
+	</include> -->
 
 </launch>

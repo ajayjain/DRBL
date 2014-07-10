@@ -24,6 +24,9 @@ define husky position
   gui_nose 1
   drive "diff"
   hokuyo(pose [ 0.000 0.000 -0.100 0.000 ])
+
+  #localization "odom"
+  #odom_error [0.00 0.00 0.00 0.00 0.00 0.00]
 )
 
 define smallhusky position

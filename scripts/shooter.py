@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+'''
+Ajay Jain
+July 8, 2014
+ARSENL Lab, Naval Postgraduate School
+'''
+
 
 #Basic imports
 from ctypes import *
@@ -15,26 +21,12 @@ def shoot():
 
 
 def main():
-    rospy.init_node("leap_control")
+    rospy.init_node("shooter")
 
 
     phidgets.phidgetsLauncher()
 
-
-
-
-
     rospy.spin()
-
-    # # Keep this process running until Enter is pressed
-    # print "Press Enter to quit..."
-    # try:
-    #   sys.stdin.readline()
-    # except KeyboardInterrupt:
-    #   pass
-    # finally:
-    #   # Remove the sample listener when done
-    #   controller.remove_listener(listener)
 
     print("Closing...")
 
