@@ -22,6 +22,14 @@ def get_params():
 	MAX_LIN = rospy.get_param('~linear_vel_max',  MAX_LIN)
 	MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
 
+def seek_rtheta(rtheta, maxlin, maxang):
+	cmd = geometry_msgs.msg.Twist()
+
+	cmd.linear.x = truncate(rtheta[0], maxlin)
+	cmd.angular.z = truncate(rtheta[1], maxang)
+
+	return cmd
+
 def seek(translation, maxlin, maxang):
 	trans = mult(normalize(translation), maxlin)
 
@@ -40,27 +48,28 @@ def seek(translation, maxlin, maxang):
 
 def on_relative(rel_pos):
 	get_params()
-	xy = rtheta_to_xy([rel_pos.range, rel_pos.bearing])
-	cmd = seek(xy, MAX_LIN, MAX_ANG)
+	rtheta = [rel_pos.range, rel_pos.bearing]
+	cmd = seek(rtheta, MAX_LIN, MAX_ANG)
 	vel_pub.publish(cmd)
+
 	rospy.loginfo('linear vel: %f', cmd.linear.x)
 	rospy.loginfo('angular vel: %f', cmd.angular.z)
 
+# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('~linear_vel_max'), rospy.get_param('~linear_vel_max', 0.8))
+# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('linear_vel_max'), rospy.get_param('linear_vel_max', 0.8))
+# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('/linear_vel_max'), rospy.get_param('/linear_vel_max', 0.8))
 
 def main():
-	global vel_pub
-
 	rospy.init_node("seek")
 	
 	listener = tf.TransformListener()
 
+	global vel_pub
 	vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist) # remap this
 	rospy.Subscriber('/target_relative', RelativePosition, on_relative) # remap this in the launch file
 
 	rospy.spin()
-	# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('~linear_vel_max'), rospy.get_param('~linear_vel_max', 0.8))
-	# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('linear_vel_max'), rospy.get_param('linear_vel_max', 0.8))
-	# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('/linear_vel_max'), rospy.get_param('/linear_vel_max', 0.8))
+
 
 if __name__ == "__main__":
 	main()

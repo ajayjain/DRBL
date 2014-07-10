@@ -5,59 +5,53 @@ July 3, 2014
 ARSENL Lab, Naval Postgraduate School
 '''
 
+import roslib; roslib.load_manifest('husky_pursuit')
 import rospy, tf, math
 import geometry_msgs.msg
+from husky_pursuit.msg import RelativePosition
 
 from utils import *
-from pure_seek import seek
-
-FRAME1_PREFIX = '/robot_0'
-FRAME2_PREFIX = '/robot_1'
-
-frame1 = None
-frame2 = None
+from pure_seek import seek, seek_rtheta
 
 MAX_LIN = 0.8
 MAX_ANG = math.pi/2
+
+vel_pub = None
 
 def get_params():
 	global MAX_LIN, MAX_ANG, FRAME1_PREFIX, FRAME2_PREFIX, frame1, frame2
 	MAX_LIN = rospy.get_param('~linear_vel_max',  MAX_LIN)
 	MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
-	FRAME1_PREFIX = rospy.get_param('~own_tf_prefix', FRAME1_PREFIX)
-	FRAME2_PREFIX = rospy.get_param('~target_tf_prefix', FRAME2_PREFIX)
-	frame1 = FRAME1_PREFIX + '/base_footprint'
-	frame2 = FRAME2_PREFIX + '/base_footprint'
+
+def flee_rtheta(rtheta, maxlin, maxang):
+	inverted = [rtheta[0] * -1, rtheta[1]]
+	return seek_rtheta(inverted, maxlin, maxang)
 
 def flee(translation, maxlin, maxang):
 	inverted = mult(translation, -1)
 	return seek(inverted, maxlin, maxang)
 
+def on_relative(rel_pos):
+	get_params()
+
+	rtheta = [rel_pos.range, rel_pos.bearing]
+	cmd = flee_rtheta(rtheta, MAX_LIN, MAX_ANG)
+	vel_pub.publish(cmd)
+
+	rospy.loginfo('linear vel: %f', cmd.linear.x)
+	rospy.loginfo('angular vel: %f', cmd.angular.z)
+
 def main():
+	global vel_pub
+
 	rospy.init_node("flee")
 	
 	listener = tf.TransformListener()
 
-	vel = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist)
+	rospy.Subscriber('/target_relative', RelativePosition, on_relative) # remap this in the launch file
+	vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist)
 
-	rate = rospy.Rate(10.0)
-	while not rospy.is_shutdown():
-		get_params()
-
-		try:
-			listener.waitForTransform(frame1, frame2, rospy.Time(0), rospy.Duration(3.0))
-			(trans,rot) = listener.lookupTransform(frame1, frame2, rospy.Time(0))
-		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-			rospy.loginfo("exception!")
-			continue
-
-		cmd = flee(trans, MAX_LIN, MAX_ANG)
-
-		rospy.loginfo('linear vel: %f', cmd.linear.x)
-		rospy.loginfo('angular vel: %f', cmd.angular.z)
-		vel.publish(cmd)
-
-		rate.sleep()
+	rospy.spin()
 
 if __name__ == "__main__":
 	main()

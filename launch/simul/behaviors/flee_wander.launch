@@ -8,8 +8,10 @@ ARSENL Lab, Naval Postgraduate School
   	<!-- <node pkg="tf" type="static_transform_publisher" name="odom_odom_link" args="4 0 0 0 0 0 /robot_0/odom /robot_1/odom 100" /> -->
 
   	<group ns="robot_0">
-		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node">
+		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node" output="screen">
 			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<remap from="/target_relative" to="/robot_0/relative1"/>
+
 			<param name="linear_vel_max" value="1" />
 			<param name="angular_vel_max" value="0.2" />
 		</node>
@@ -22,10 +24,10 @@ ARSENL Lab, Naval Postgraduate School
 	</node> -->
 
   	<group ns="robot_1">
-		<node pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen">
+		<node pkg="husky_pursuit" type="wander.py" name="wander_node">
 			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
-			<param name="linear_vel_max" value="0.5" />
-			<param name="angular_vel_max" value="1.57" />
+			<param name="linear_vel_max" value="1.0" />
+			<param name="angular_vel_max" value="1.0" />
 		</node>
 	</group>
 
