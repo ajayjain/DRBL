@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /TF1/Status1
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
@@ -27,7 +26,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Robot 0 LaserScan
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -54,54 +53,13 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        robot_0/base_footprint:
-          Value: true
-        robot_0/base_laser_link:
-          Value: true
-        robot_0/base_link:
-          Value: true
-        robot_0/odom:
-          Value: true
-        robot_1/base_footprint:
-          Value: true
-        robot_1/base_laser_link:
-          Value: true
-        robot_1/base_link:
-          Value: true
-        robot_1/odom:
-          Value: true
-        robot_2/base_footprint:
-          Value: true
-        robot_2/base_laser_link:
-          Value: true
-        robot_2/base_link:
-          Value: true
-        robot_2/odom:
-          Value: true
-        world:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          robot_0/odom:
-            robot_0/base_footprint:
-              robot_0/base_link:
-                robot_0/base_laser_link:
-                  {}
-          robot_1/odom:
-            robot_1/base_footprint:
-              robot_1/base_link:
-                robot_1/base_laser_link:
-                  {}
-          robot_2/odom:
-            robot_2/base_footprint:
-              robot_2/base_link:
-                robot_2/base_laser_link:
-                  {}
+        {}
       Update Interval: 0
       Value: true
     - Angle Tolerance: 0.1

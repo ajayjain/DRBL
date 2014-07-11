@@ -61,8 +61,8 @@ def main():
 
 	rospy.init_node("seek")
 	
-	vel_pub = rospy.Publisher('/robot_1/cmd_vel', Twist) # remap this
-	rospy.Subscriber('/robot_1/base_scan', LaserScan, on_scan) # remap this in the launch file
+	vel_pub = rospy.Publisher('/cmd_vel', Twist) # remap this
+	rospy.Subscriber('/base_scan', LaserScan, on_scan) # remap this in the launch file
 
 	rate = rospy.Rate(500.0)
 	while not rospy.is_shutdown():
