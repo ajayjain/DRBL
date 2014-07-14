@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 14, 2014
+ARSENL Lab, Naval Postgraduate School
+
+roslaunch husky_pursuit robot.launch \
+	own_num:=0 \
+	target_num:=0 \
+	linear_vel_max:= 0.1 \
+	angular_vel_max:=0.1 \
+	<seek/flee/wander/serpentine>:=true (false by default)
+-->
+<launch>
+	<arg name="own_num" default="0" />
+	<arg name="target_num" default="1" />
+	<arg name="linear_vel_max" default="0.1" />
+	<arg name="angular_vel_max" default="0.1" />
+
+	<arg name="seek" default="false" />
+	<arg name="flee" default="false" />
+	<arg name="wander" default="false" />
+	<arg name="serpentine" default="false" />
+
+	<group ns="robot_$(arg own_num)">
+		#### husky base launch ###########
+		<include file="$(find husky_base)/launch/base.launch">
+			<arg name="port" value="/dev/ttyUSB0" />
+		</include>
+
+		#### hokuyo launch ###########
+		<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+			<param name="port" type="string" value="/dev/ttyACM0"/> 
+			<param name="intensity" type="bool" value="true"/>
+			<param name="frame_id" value="/laser"/>
+		</node>
+
+		#### publish a base_link -> laser transform ###########
+  		<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /base_link /laser 100" />
+  		<!-- <node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /odom /base_footprint 100" /> -->
+
+		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
+			<remap from="base_scan" to="base_scan" />
+			<remap from="cmd_vel" to="cmd_vel" />
+		</node>
+
+		<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
+			<param name="own_tf_prefix" value="robot_$(arg own_num)" />
+			<param name="target_tf_prefix" value="robot_$(arg target_num)" />
+			<remap from="target_relative" to="relative$(arg target_num)" />
+		</node>
+
+		#### CONDITIONALLY LAUNCH BEHAVIORS ###########
+		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)">
+			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			<remap from="/target_relative" to="relative1"/>
+			
+			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
+			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
+		</node>
+
+		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node" output="screen" if="$(arg flee)">
+			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			<remap from="/target_relative" to="relative1"/>
+			
+			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
+			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
+		</node>
+
+		<node pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen" if="$(arg wander)">
+			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			
+			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
+			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
+		</node>
+
+		<node pkg="husky_pursuit" type="serpentine.py" name="serpentine_node" output="screen" if="$(arg serpentine)">
+			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			
+			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
+			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
+		</node>
+	</group>
+</launch>

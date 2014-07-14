@@ -5,7 +5,7 @@
 		<arg name="port" value="/dev/ttyUSB0" />
 	</include>
 
-	<!-- Husky URDFs? Transforms? -->
+	<!-- Husky URDFs -->
 	<include file="$(find husky_description)/launch/description.launch" />
 
 	#### publish a base_link -> laser transform ###########
