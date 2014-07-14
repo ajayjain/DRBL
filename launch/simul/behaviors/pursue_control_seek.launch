@@ -31,11 +31,13 @@ ARSENL Lab, Naval Postgraduate School
   	<group ns="robot_2">
 		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node">
 			<remap from="/cmd_vel" to="/robot_2/cmd_vel"/>
+			<remap from="/target_relative" to="/robot_2/relative1"/>
+
 
 			<param name="linear_vel_max" value=".8" />
 			<param name="angular_vel_max" value="1" />
-			<param name="own_tf_prefix" value="/robot_2" />
-			<param name="target_tf_prefix" value="/robot_1" />
+			<!-- <param name="own_tf_prefix" value="/robot_2" /> -->
+			<!-- <param name="target_tf_prefix" value="/robot_1" /> -->
 		</node>
 	</group>
 </launch>
