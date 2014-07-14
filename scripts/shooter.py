@@ -27,21 +27,8 @@ def get_params():
     global yaw_tolerance
 
     max_range = rospy.get_param('~max_fire_range', max_range)
-
     bearing_tolerance = rospy.get_param('~bearing_tolerance', bearing_tolerance)
-
     yaw_tolerance = rospy.get_param('~yaw_tolerance', yaw_tolerance)
-
-
-    # MAX_LIN = rospy.get_param('~linear_vel_max',  MAX_LIN)
-    # MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
-
-
-# def shoot():
-    # fire_pub.publish(fire_msg)
-#     phidgets.interfaceKit.setOutputState(0, 1)
-#     sleep(1)
-#     phidgets.interfaceKit.setOutputState(0, 0)
 
 def on_relative_position(rel):
     print "relative position"
@@ -58,20 +45,6 @@ def on_relative_position(rel):
     rospy.loginfo("SHOOTING: PUBLISHING FIRE MSG!")
     fire_pub.publish(fire_msg)
 
-def close():
-    print("Closing...")
-
-    try:
-        phidgets.interfaceKit.closePhidget()
-    except PhidgetException as e:
-        print("Phidget Exception %i: %s" % (e.code, e.details))
-        print("Exiting....")
-        exit(1)
-
-    print("Done.")
-    exit(0)
-
-
 def main():
     global fire_pub
 
@@ -81,8 +54,6 @@ def main():
     rospy.Subscriber("/target_relative", RelativePosition, on_relative_position)
 
     rospy.spin()
-
-    close()
 
 if __name__ == "__main__":
     main()
