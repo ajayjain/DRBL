@@ -23,6 +23,10 @@ roslaunch husky_pursuit robot.launch \
 	<arg name="serpentine" default="false" />
 
 	<group ns="robot_$(arg own_num)">
+		<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
+			<param name="tf_prefix" value="robot_$(arg own_num)" />
+		</node>
+
 		#### husky base launch ###########
 		<include file="$(find husky_base)/launch/base.launch">
 			<arg name="port" value="/dev/ttyUSB0" />
@@ -36,8 +40,8 @@ roslaunch husky_pursuit robot.launch \
 		</node>
 
 		#### publish a base_link -> laser transform ###########
-  		<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /base_link /laser 100" />
-  		<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /base_footprint 100" />
+  		<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
+  		<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" />
 
 		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
 			<remap from="base_scan" to="base_scan" />
