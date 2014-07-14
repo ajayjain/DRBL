@@ -7,7 +7,7 @@ ARSENL Lab, Naval Postgraduate School
 roslaunch husky_pursuit robot.launch \
 	own_num:=0 \
 	target_num:=0 \
-	linear_vel_max:= 0.1 \
+	linear_vel_max:=0.1 \
 	angular_vel_max:=0.1 \
 	<seek/flee/wander/serpentine>:=true (false by default)
 -->

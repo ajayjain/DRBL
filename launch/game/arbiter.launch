@@ -5,21 +5,14 @@ July 14, 2014
 ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
-	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />
+	<!-- No namespace here as we will share this description. 
+		 Access with slash at the beginning -->
+    <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find husky_description)/urdf/base.urdf.xacro'" /> -->
+	<include file="$(find husky_description)/launch/description.launch" />
 
+	#### world -> odom links. Configure based on initial robot positions ###########
+	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />
 	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="5 0 0 0 0 0 /world /robot_1/odom 100" />
 
-	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01">
-		<param name="own_tf_prefix" value="robot_0" />
-		<param name="target_tf_prefix" value="robot_1" />
-		<remap from="target_relative" to="/robot_0/relative1" />
-	</node>
-
-	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10">
-		<param name="own_tf_prefix" value="robot_1" />
-		<param name="target_tf_prefix" value="robot_0" />
-		<remap from="target_relative" to="/robot_1/relative0" />
-	</node>
-
-
+	<node pkg="rviz" type="rviz" name="arbiter_rviz" args="-d $(find husky_pursuit)/rviz/huskies.rviz" />
 </launch>
