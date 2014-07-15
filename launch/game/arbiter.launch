@@ -11,8 +11,8 @@ ARSENL Lab, Naval Postgraduate School
 	<!-- <include file="$(find husky_description)/launch/description.launch" /> -->
 
 	#### world -> odom links. Configure based on initial robot positions ###########
-	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/odom 100" />
-	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="5 0 0 0 0 0 /world /robot_1/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="1 0 0 0 0 0 /world /robot_0/world 40" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="5 0 0 0 0 0 /world /robot_1/world 40" />
 
 	<node pkg="rviz" type="rviz" name="arbiter_rviz" args="-d $(find husky_pursuit)/rviz/huskies.rviz" />
 </launch>

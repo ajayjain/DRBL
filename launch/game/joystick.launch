@@ -1,0 +1,30 @@
+<launch>
+  <arg name="own_num" default="0" />
+  <arg name="drive_speed" default="1.0" />
+  <arg name="turn_speed" default="1.0" />
+  <arg name="joy_dev" default="/dev/input/js0" />
+  <arg name="cmd_topic" default="husky/cmd_vel" />
+
+  <arg name="deadman_button" default="1" />
+  <arg name="fire_button" default="0" />
+
+  <group ns="robot_$(arg own_num)">
+    <node pkg="joy" type="joy_node" name="joy_node">
+      <param name="dev" value="$(arg joy_dev)" />
+      <param name="deadzone" value="0.3" />
+    </node>
+
+    <node pkg="husky_teleop" type="joystick_teleop" name="husky_joystick">
+      <param name="turn_scale" value="$(arg turn_speed)" />
+      <param name="drive_scale" value="$(arg drive_speed)" />
+      <param name="deadman_button" value="$(arg deadman_button)" />
+      
+      <remap from="cmd_vel" to="$(arg cmd_topic)" />
+    </node>
+
+    <node pkg="husky_pursuit" type="manual_shooter.py" name="robot_$(arg own_num)_manual_shooter" output="screen">
+      <param name="fire_button" value="$(arg fire_button)" />
+      <param name="semiauto" value="true" /> # default
+    </node>
+  </group>
+</launch>
