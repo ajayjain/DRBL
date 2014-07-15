@@ -1,0 +1,12 @@
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <remap from="odom" to="encoder" />
+      <rosparam>
+        freq: 10.0
+        sensor_timeout: 1.0
+        publish_tf: true
+        odom_used: true
+        vo_used: false
+        imu_used: false
+        output_frame: robot_$(arg own_num)/odom
+      </rosparam>
+    </node>
