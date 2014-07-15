@@ -33,26 +33,47 @@ roslaunch husky_pursuit robot.launch \
 		</include>
 
 		#### hokuyo launch ###########
-		<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+		<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
 			<param name="port" type="string" value="/dev/ttyACM0"/> 
 			<param name="intensity" type="bool" value="true"/>
-			<param name="frame_id" value="/laser"/>
+			<param name="frame_id" value="robot_$(arg own_num)/base_footprint_rear_bumper_part"/>
+			#<param name="frame_id" value="robot_$(arg own_num)/laser"/>
 		</node>
 
 		#### publish a base_link -> laser transform ###########
   		<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
   		<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" />
 
-		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
-			<remap from="base_scan" to="base_scan" />
-			<remap from="cmd_vel" to="cmd_vel" />
+		<node pkg="laser_scan_matcher" type="laser_scan_matcher_node" 
+		    name="laser_scan_matcher_node" output="screen">
+
+		    <remap from="odom" to="encoder"/>
+		    <remap from="vel" to="husky/cmd_vel"/>
+
+		    <!-- Use odometry and a constant velocity model only (no IMU) -->
+		    <param name="use_imu" value="false"/>
+		    <param name="use_vel" value="true"/>
+
+		    <param name="fixed_frame" value="robot_$(arg own_num)/world" />  # Default: world
+		    <param name="base_frame" value="robot_$(arg own_num)/odom"/>  # Default: base_link
+		    <param name="publish_tf" value="true"/>    # Default: true
+		    <param name="max_iterations" value="10"/>
+
 		</node>
 
-		<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
-			<param name="own_tf_prefix" value="robot_$(arg own_num)" />
-			<param name="target_tf_prefix" value="robot_$(arg target_num)" />
-			<remap from="target_relative" to="relative$(arg target_num)" />
+
+		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
+			<remap from="base_scan" to="scan" />
+			<remap from="cmd_vel" to="husky/cmd_vel" />
 		</node>
+
+		#<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
+		#	<param name="own_tf_prefix" value="robot_$(arg own_num)" />
+		#	<param name="target_tf_prefix" value="robot_$(arg target_num)" />
+		#	<remap from="target_relative" to="relative$(arg target_num)" />
+		#</node>
+
+		<include file="$(find husky_pursuit)/launch/camera.launch" />
 
 		#### CONDITIONALLY LAUNCH BEHAVIORS ###########
 		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)">
