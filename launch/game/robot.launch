@@ -42,15 +42,30 @@ roslaunch husky_pursuit robot.launch \
 
 		#### publish a base_link -> laser transform ###########
   		<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
-  		<node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" />
+  		<!-- <node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" /> -->
 
-		<node pkg="laser_scan_matcher" type="laser_scan_matcher_node" 
+
+		<node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+			<remap from="odom" to="encoder" />
+			<rosparam>
+                freq: 10.0
+                sensor_timeout: 1.0
+                publish_tf: true
+                odom_used: true
+                vo_used: false
+                imu_used: false
+            </rosparam>
+           	<param name="output_frame" value="odom_combined" />
+           	<param name="tf_prefix" value="robot_$(arg own_num)" />
+	    </node>
+
+		<!-- <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" 
 		    name="laser_scan_matcher_node" output="screen">
 
 		    <remap from="odom" to="encoder"/>
 		    <remap from="vel" to="husky/cmd_vel"/>
 
-		    <!-- Use odometry and a constant velocity model only (no IMU) -->
+		    # Use odometry and a constant velocity model only (no IMU)
 		    <param name="use_imu" value="false"/>
 		    <param name="use_vel" value="true"/>
 
@@ -59,7 +74,7 @@ roslaunch husky_pursuit robot.launch \
 		    <param name="publish_tf" value="true"/>    # Default: true
 		    <param name="max_iterations" value="10"/>
 
-		</node>
+		</node> -->
 
 
 		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
@@ -67,11 +82,11 @@ roslaunch husky_pursuit robot.launch \
 			<remap from="cmd_vel" to="husky/cmd_vel" />
 		</node>
 
-		#<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
-		#	<param name="own_tf_prefix" value="robot_$(arg own_num)" />
-		#	<param name="target_tf_prefix" value="robot_$(arg target_num)" />
-		#	<remap from="target_relative" to="relative$(arg target_num)" />
-		#</node>
+		<!-- <node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
+			<param name="own_tf_prefix" value="robot_$(arg own_num)" />
+			<param name="target_tf_prefix" value="robot_$(arg target_num)" />
+			<remap from="target_relative" to="relative$(arg target_num)" />
+		</node> -->
 
 		<include file="$(find husky_pursuit)/launch/camera.launch" />
 
