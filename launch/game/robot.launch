@@ -88,7 +88,7 @@ roslaunch husky_pursuit robot.launch \
 			<remap from="target_relative" to="relative$(arg target_num)" />
 		</node> -->
 
-		<include file="$(find husky_pursuit)/launch/camera.launch" />
+		<!-- <include file="$(find husky_pursuit)/launch/camera.launch" /> -->
 
 		#### CONDITIONALLY LAUNCH BEHAVIORS ###########
 		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)">
