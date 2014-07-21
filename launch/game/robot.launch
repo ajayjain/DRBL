@@ -7,6 +7,8 @@ ARSENL Lab, Naval Postgraduate School
 roslaunch husky_pursuit robot.launch \
 	own_num:=0 \
 	target_num:=1 \
+
+	
 	linear_vel_max:=0.1 \
 	angular_vel_max:=0.1 \
 	<seek/flee/wander/serpentine>:=true (false by default)
@@ -14,13 +16,6 @@ roslaunch husky_pursuit robot.launch \
 <launch>
 	<arg name="own_num" default="0" />
 	<arg name="target_num" default="1" />
-	<arg name="linear_vel_max" default="0.1" />
-	<arg name="angular_vel_max" default="0.1" />
-
-	<arg name="seek" default="false" />
-	<arg name="flee" default="false" />
-	<arg name="wander" default="false" />
-	<arg name="serpentine" default="false" />
 
 	<group ns="robot_$(arg own_num)">
 		<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
@@ -64,7 +59,6 @@ roslaunch husky_pursuit robot.launch \
 
 		    <remap from="odom" to="encoder"/>
 		    <remap from="vel" to="husky/cmd_vel"/>
-
 		    # Use odometry and a constant velocity model only (no IMU)
 		    <param name="use_imu" value="false"/>
 		    <param name="use_vel" value="true"/>
@@ -82,6 +76,7 @@ roslaunch husky_pursuit robot.launch \
 			<remap from="cmd_vel" to="husky/cmd_vel" />
 		</node>
 
+<<<<<<< HEAD
 		<!-- <node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
 			<param name="own_tf_prefix" value="robot_$(arg own_num)" />
 			<param name="target_tf_prefix" value="robot_$(arg target_num)" />
@@ -120,5 +115,7 @@ roslaunch husky_pursuit robot.launch \
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
 		</node>
+
+		<include file="$(find husky_pursuit)/launch/camera.launch" />
 	</group>
 </launch>
