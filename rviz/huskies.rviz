@@ -10,6 +10,8 @@ Panels:
         - /Robot 1 Odometry1
         - /Robot 0 LaserScan1
         - /Robot 1 LaserScan1
+        - /RobotModel1
+        - /RobotModel2
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
@@ -73,16 +75,6 @@ Visualization Manager:
           Value: true
         robot_0/odom_combined:
           Value: true
-        robot_1/base_footprint:
-          Value: true
-        robot_1/base_footprint_front_bumper_part:
-          Value: true
-        robot_1/base_footprint_rear_bumper_part:
-          Value: true
-        robot_1/base_footprint_top_plate_part:
-          Value: true
-        robot_1/base_footprint_user_rail_part:
-          Value: true
         robot_1/base_link:
           Value: true
         robot_1/laser:
@@ -112,18 +104,7 @@ Visualization Manager:
                 robot_0/laser:
                   {}
           robot_1/odom_combined:
-            robot_1/base_footprint:
-              robot_1/base_footprint_front_bumper_part:
-                {}
-              robot_1/base_footprint_rear_bumper_part:
-                {}
-              robot_1/base_footprint_top_plate_part:
-                {}
-              robot_1/base_footprint_user_rail_part:
-                {}
-              robot_1/base_link:
-                robot_1/laser:
-                  {}
+            {}
       Update Interval: 0
       Value: true
     - Angle Tolerance: 0.1
@@ -204,6 +185,138 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        back_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        back_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_front_bumper_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_rear_bumper_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_top_plate_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_user_rail_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: robot_0
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        back_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        back_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_front_bumper_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_rear_bumper_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_top_plate_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_footprint_user_rail_part:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: robot_1
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -228,22 +341,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.89447
+      Distance: 6.97724
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.10697
-        Y: 0.220701
-        Z: 0.411426
+        X: 2.0514
+        Y: 0.199067
+        Z: -0.637596
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.344797
+      Pitch: 0.579797
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.92818
+      Yaw: 3.60318
     Saved: ~
 Window Geometry:
   Displays:
@@ -261,5 +374,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 1366
+  X: 1359
   Y: 24
