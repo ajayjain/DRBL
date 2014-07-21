@@ -18,31 +18,11 @@ ARSENL Lab, Naval Postgraduate School
 	<include file="$(find husky_pursuit)/launch/game/arbiter.launch" /> # local
 
 	#### 3/4: ROBOT - ROBOT LAUNCHES ###########
-	<include file="$(find husky_pursuit)/launch/game/robot.launch">
+	<node machine="robot_0" pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_0/base_link /robot_0/laser 40" />
+
+<!-- 	<include file="$(find husky_pursuit)/launch/game/robot.launch">
 		<arg name="own_num" value="0" />
 		<arg name="target_num" value="1" />
 		<arg name="machine" value="robot_0" />
-	</include>
-	<!-- <include machine="robot_1" file="$(find husky_pursuit)/launch/game/robot.launch">
-		<arg name="own_num" value="1" />
-		<arg name="target_num" value="0" />
-		<arg name="machine" value="robot_1" />
-	</include> -->
-
-	#### 5: ARBITER - RELATIVE PUBS ###########
-	<include file="$(find husky_pursuit)/launch/game/tf_to_relative.launch" /> # local
-
-	#### 6/7: ROBOT - BEHAVIORS ###########
-	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">
-		<arg name="serpentine" value="false" />
-		<arg name="linear_vel_max" value=".1" />
-		<arg name="angular_vel_max" value=".4" />
-		<!-- <arg name="machine" value="robot_0" /> -->
-	</include>
-	<!-- <include machine="robot_1" file="$(find husky_pursuit)/launch/game/behaviors.launch">
-		<arg name="flee" value="false" />
-		<arg name="own_num" value="1" />
-		<arg name="target_num" value="0" />
-		<arg name="machine" value="robot_1" />
 	</include> -->
 </launch>
