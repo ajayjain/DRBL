@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 21, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<arg name="robot_0_ip" default="$(env ROS_MASTER_IP)" />
+	<arg name="robot_1_ip" default="$(env ROS_ROBOT1_IP)" />
+
+	<machine name="robot_0"
+			 address="$(arg robot_0_ip)" # 192.168.1.125
+			 user="ros"
+			 password="ros"
+			 env-loader="$(env ROS_WS)/husky_launcher.sh"
+			 ssh-port="22" />
+
+<!-- 	<machine name="robot_1"
+			 address="$(arg robot_1_ip)" # 192.168.1.112
+			 user="ros"
+			 password="ros"
+			 env-loader="$(env ROS_WS)/husky_launcher.sh"
+			 ssh-port="22" />
+ --></launch>
