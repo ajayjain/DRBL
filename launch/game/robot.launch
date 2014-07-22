@@ -72,11 +72,10 @@ roslaunch husky_pursuit robot.launch \
 
 
 		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
-			<remap from="base_scan" to="scan" />
+			<param name="scan_topic" value="scan" />
 			<remap from="cmd_vel" to="husky/cmd_vel" />
 		</node>
 
-<<<<<<< HEAD
 		<!-- <node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
 			<param name="own_tf_prefix" value="robot_$(arg own_num)" />
 			<param name="target_tf_prefix" value="robot_$(arg target_num)" />
@@ -84,38 +83,5 @@ roslaunch husky_pursuit robot.launch \
 		</node> -->
 
 		<!-- <include file="$(find husky_pursuit)/launch/camera.launch" /> -->
-
-		#### CONDITIONALLY LAUNCH BEHAVIORS ###########
-		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
-			<remap from="/target_relative" to="relative1"/>
-			
-			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
-			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
-		</node>
-
-		<node pkg="husky_pursuit" type="pure_flee.py" name="flee_node" output="screen" if="$(arg flee)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
-			<remap from="/target_relative" to="relative1"/>
-			
-			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
-			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
-		</node>
-
-		<node pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen" if="$(arg wander)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
-			
-			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
-			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
-		</node>
-
-		<node pkg="husky_pursuit" type="serpentine.py" name="serpentine_node" output="screen" if="$(arg serpentine)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
-			
-			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
-			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
-		</node>
-
-		<include file="$(find husky_pursuit)/launch/camera.launch" />
 	</group>
 </launch>

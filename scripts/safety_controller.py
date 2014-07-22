@@ -16,6 +16,7 @@ from husky_pursuit.msg import RelativePosition
 STOP_THRESHOLD = 1
 emergency = False
 stop_vel = Twist()
+scan_topic = rospy.get_param('~scan_topic', 'base_scan')
 
 def get_params():
 	pass
@@ -62,9 +63,9 @@ def main():
 	rospy.init_node("seek")
 	
 	vel_pub = rospy.Publisher('/cmd_vel', Twist) # remap this
-	rospy.Subscriber('/base_scan', LaserScan, on_scan) # remap this in the launch file
+	rospy.Subscriber(scan_topic, LaserScan, on_scan) # remap this in the launch file
 
-	rate = rospy.Rate(500.0)
+	rate = rospy.Rate(250.0)
 	while not rospy.is_shutdown():
 		if emergency:
 			vel_pub.publish(stop_vel)
