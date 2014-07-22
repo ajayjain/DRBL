@@ -8,7 +8,7 @@ roslaunch husky_pursuit robot.launch \
 	own_num:=0 \
 	target_num:=1 \
 
-	
+
 	linear_vel_max:=0.1 \
 	angular_vel_max:=0.1 \
 	<seek/flee/wander/serpentine>:=true (false by default)
@@ -16,19 +16,21 @@ roslaunch husky_pursuit robot.launch \
 <launch>
 	<arg name="own_num" default="0" />
 	<arg name="target_num" default="1" />
+	<arg name="machine" default="robot_$(arg own_num)" />
 
 	<group ns="robot_$(arg own_num)">
-		<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
+		<node machine="$(arg machine)" name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
 			<param name="tf_prefix" value="robot_$(arg own_num)" />
 		</node>
 
 		#### husky base launch ###########
-		<include file="$(find husky_base)/launch/base.launch">
+		<include file="$(find husky_pursuit)/launch/game/base.launch">
 			<arg name="port" value="/dev/ttyUSB0" />
+			<arg name="machine" value="$(arg machine)" />
 		</include>
 
 		#### hokuyo launch ###########
-		<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
+		<node machine="$(arg machine)" name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
 			<param name="port" type="string" value="/dev/ttyACM0"/> 
 			<param name="intensity" type="bool" value="true"/>
 			<param name="frame_id" value="robot_$(arg own_num)/base_footprint_rear_bumper_part"/>
@@ -36,11 +38,11 @@ roslaunch husky_pursuit robot.launch \
 		</node>
 
 		#### publish a base_link -> laser transform ###########
-  		<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
+  		<node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
   		<!-- <node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" /> -->
 
 
-		<node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
 			<remap from="odom" to="encoder" />
 			<rosparam>
                 freq: 10.0
@@ -70,18 +72,17 @@ roslaunch husky_pursuit robot.launch \
 
 		</node> -->
 
-
 		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
 			<param name="scan_topic" value="scan" />
 			<remap from="cmd_vel" to="husky/cmd_vel" />
 		</node>
 
-		<!-- <node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_$(arg own_num)$(arg target_num)">
-			<param name="own_tf_prefix" value="robot_$(arg own_num)" />
-			<param name="target_tf_prefix" value="robot_$(arg target_num)" />
-			<remap from="target_relative" to="relative$(arg target_num)" />
-		</node> -->
-
-		<!-- <include file="$(find husky_pursuit)/launch/camera.launch" /> -->
+		<node machine="$(arg machine)" name="camera" pkg="usb_cam" type="usb_cam_node">
+			<param name="video_device" value="/dev/video0" />
+			<param name="image_width" value="1280" />
+			<param name="image_height" value="720" />
+			<param name="pixel_format" value="yuyv" />
+			<param name="camera_frame_id" value="webcam" />
+		</node>
 	</group>
 </launch>

@@ -9,16 +9,16 @@ ARSENL Lab, Naval Postgraduate School
 	<arg name="robot_1_ip" default="$(env ROS_ROBOT1_IP)" />
 
 	<machine name="robot_0"
-			 address="$(arg robot_0_ip)" # 192.168.1.125
+			 address="$(arg robot_0_ip)"
 			 user="ros"
-			 password="ros"
-			 env-loader="$(env ROS_WS)/husky_launcher.sh"
-			 ssh-port="22" />
+			 env-loader="/home/ros/catkin_ws/husky_launcher.sh"
+			 ssh-port="22"
+			 timeout="20" />
 
-<!-- 	<machine name="robot_1"
-			 address="$(arg robot_1_ip)" # 192.168.1.112
+	<machine name="robot_1"
+			 address="$(arg robot_1_ip)"
 			 user="ros"
-			 password="ros"
-			 env-loader="$(env ROS_WS)/husky_launcher.sh"
-			 ssh-port="22" />
- --></launch>
+			 env-loader="/home/ros/catkin_ws/husky_launcher.sh"
+			 ssh-port="22"
+			 timeout="20" />
+</launch>
