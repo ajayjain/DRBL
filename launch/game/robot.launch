@@ -72,8 +72,9 @@ roslaunch husky_pursuit robot.launch \
 
 		</node> -->
 
-		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
-			<param name="scan_topic" value="scan" />
+
+		<node machine="$(arg machine)" pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
+			<remap from="base_scan" to="scan" />
 			<remap from="cmd_vel" to="husky/cmd_vel" />
 		</node>
 

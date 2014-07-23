@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /TF1
         - /Robot 0 Odometry1
         - /Robot 1 Odometry1
         - /Robot 0 LaserScan1
@@ -75,6 +76,16 @@ Visualization Manager:
           Value: true
         robot_0/odom_combined:
           Value: true
+        robot_1/base_footprint:
+          Value: true
+        robot_1/base_footprint_front_bumper_part:
+          Value: true
+        robot_1/base_footprint_rear_bumper_part:
+          Value: true
+        robot_1/base_footprint_top_plate_part:
+          Value: true
+        robot_1/base_footprint_user_rail_part:
+          Value: true
         robot_1/base_link:
           Value: true
         robot_1/laser:
@@ -87,7 +98,7 @@ Visualization Manager:
       Name: TF
       Show Arrows: true
       Show Axes: true
-      Show Names: true
+      Show Names: false
       Tree:
         world:
           robot_0/odom_combined:
@@ -353,10 +364,10 @@ Visualization Manager:
         Z: -0.637596
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.579797
+      Pitch: 0.769797
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.60318
+      Yaw: 1.68818
     Saved: ~
 Window Geometry:
   Displays:
