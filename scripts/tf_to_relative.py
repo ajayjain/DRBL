@@ -37,14 +37,14 @@ def main():
 
 	rate = rospy.Rate(10.0)
 	get_params()
-	listener.waitForTransform(own_frame, target_frame, rospy.Time(), rospy.Duration(15.0))
+	listener.waitForTransform(own_frame, target_frame, rospy.Time.now(), rospy.Duration(5.0))
 
 	while not rospy.is_shutdown():
 		get_params()
 
 		try:
 			now = rospy.Time.now()
-			listener.waitForTransform(own_frame, target_frame, now, rospy.Duration(15.0))
+			listener.waitForTransform(own_frame, target_frame, now, rospy.Duration(5.0))
 			(trans, rot) = listener.lookupTransform(own_frame, target_frame, now)
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
 			rospy.loginfo("tf exception!")

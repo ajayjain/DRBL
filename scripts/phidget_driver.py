@@ -21,9 +21,9 @@ health_msg.data = 6
 lives = []
 
 def shoot():
-	phidgets.interfaceKit.setOutputState(0, 1)
+	phidgets.interfaceKit.setOutputState(1, 1)
 	rospy.sleep(0.1)
-	phidgets.interfaceKit.setOutputState(0, 0)
+	phidgets.interfaceKit.setOutputState(1, 0)
 
 def publish_health():
 	if health_pub is not None:

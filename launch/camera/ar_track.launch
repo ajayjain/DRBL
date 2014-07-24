@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 23, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<arg name="marker_size" default="1.2" />
+	<arg name="max_new_marker_error" default="0.08" />
+	<arg name="max_track_error" default="0.2" />
+	<arg name="cam_image_topic" default="/camera/image_raw" />
+	<arg name="cam_info_topic" default="/camera/camera_info" />	
+	<arg name="output_frame" default="/camera" />
+	
+
+	<group ns="camera">
+		<node pkg="image_proc" type="image_proc" name="image_proc" />
+	    <node name="uvc_camera_node" pkg="uvc_camera" type="uvc_camera_node" output="screen">
+		    <param name="width" type="int" value="640" />
+		    <param name="height" type="int" value="480" />
+		    <param name="fps" type="int" value="30" />
+	    	<param name="frame" value="camera" />
+	    	<param name="device" value="/dev/video0" />
+	    </node>
+	</group>
+
+	<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" />
+</launch>

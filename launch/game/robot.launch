@@ -85,5 +85,7 @@ roslaunch husky_pursuit robot.launch \
 			<param name="pixel_format" value="yuyv" />
 			<param name="camera_frame_id" value="webcam" />
 		</node>
+
+		<node machine="$(arg machine)" pkg="husky_pursuit" name="phidget_driver" type="phidget_driver.py" />
 	</group>
 </launch>
