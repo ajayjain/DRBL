@@ -15,7 +15,7 @@ ARSENL Lab, Naval Postgraduate School
 
 	<group ns="camera">
 		<node pkg="image_proc" type="image_proc" name="image_proc" />
-	    <node name="uvc_camera_node" pkg="uvc_camera" type="uvc_camera_node" output="screen">
+	    <node name="uvc_camera_node" pkg="uvc_camera" type="uvc_camera_node" output="screen" >
 		    <param name="width" type="int" value="640" />
 		    <param name="height" type="int" value="480" />
 		    <param name="fps" type="int" value="30" />
@@ -24,5 +24,5 @@ ARSENL Lab, Naval Postgraduate School
 	    </node>
 	</group>
 
-	<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" />
+	<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" output="screen"  />
 </launch>

@@ -35,6 +35,7 @@ def on_joy(joy):
 
 def main():
 	rospy.init_node("manual_shooter")
+	rospy.loginfo("starting joy Subscriber")
 	rospy.Subscriber("joy", Joy, on_joy)
 	rospy.spin()
 

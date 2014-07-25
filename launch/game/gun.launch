@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 25, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<arg name="machine" default="robot_0" />
+	<arg name="relative_topic" default="/$(arg machine)/relative1" />
+
+	<group ns="$(arg machine)">
+		<node machine="$(arg machine)" pkg="husky_pursuit" name="shooter" type="shooter.py">
+			<!-- <param name="relative_topic" value="$(arg relative_topic)" /> -->
+			<remap from="/target_relative" to="$(arg relative_topic)"/>
+		</node>
+	</group>
+</launch>

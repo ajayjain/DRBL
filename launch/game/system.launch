@@ -38,6 +38,8 @@ ARSENL Lab, Naval Postgraduate School
 		<arg name="angular_vel_max" value=".3" />
 		<!-- <arg name="machine" value="robot_0" /> -->
 	</include>
+	<include file="$(find husky_pursuit)/launch/game/gun.launch" />
+
 	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">
 		<!-- <arg name="serpentine" value="true" /> -->
 		<arg name="linear_vel_max" value=".1" />
@@ -46,5 +48,9 @@ ARSENL Lab, Naval Postgraduate School
 		<arg name="own_num" value="1" />
 		<arg name="target_num" value="0" />
 		<arg name="machine" value="robot_1" />
+	</include>
+	<include file="$(find husky_pursuit)/launch/game/gun.launch">
+		<arg name="machine" value="robot_1" />
+		<arg name="relative_topic" value="/robot_1/relative0" />
 	</include>
 </launch>

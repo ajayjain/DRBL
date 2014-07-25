@@ -16,4 +16,5 @@ ARSENL Lab, Naval Postgraduate School
 
 	<node pkg="rviz" type="rviz" name="arbiter_rviz" args="-d $(find husky_pursuit)/rviz/huskies.rviz" />
 
+	<node pkg="rqt_gui" type="rqt_gui" name="arbiter_rqt_gui" />
 </launch>

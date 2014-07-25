@@ -21,6 +21,8 @@ yaw_tolerance = math.radians(20)
 fire_pub = None
 fire_msg = Bool(True)
 
+relative_topic = "/target_relative"
+
 def get_params():
     global max_range
     global bearing_tolerance
@@ -29,6 +31,7 @@ def get_params():
     max_range = rospy.get_param('~max_fire_range', max_range)
     bearing_tolerance = rospy.get_param('~bearing_tolerance', bearing_tolerance)
     yaw_tolerance = rospy.get_param('~yaw_tolerance', yaw_tolerance)
+    relative_topic = rospy.get_param('~relative_topic', relative_topic) # topic with target's relative position
 
 def on_relative_position(rel):
     print "relative position"
@@ -51,7 +54,7 @@ def main():
     rospy.init_node("shooter")
 
     fire_pub = rospy.Publisher("status/fire", Bool)
-    rospy.Subscriber("/target_relative", RelativePosition, on_relative_position)
+    rospy.Subscriber(relative_topic, RelativePosition, on_relative_position)
 
     rospy.spin()
 

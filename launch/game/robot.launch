@@ -30,12 +30,12 @@ roslaunch husky_pursuit robot.launch \
 		</include>
 
 		#### hokuyo launch ###########
-		<node machine="$(arg machine)" name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
+		<!-- <node machine="$(arg machine)" name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
 			<param name="port" type="string" value="/dev/ttyACM0"/> 
 			<param name="intensity" type="bool" value="true"/>
 			<param name="frame_id" value="robot_$(arg own_num)/base_footprint_rear_bumper_part"/>
 			#<param name="frame_id" value="robot_$(arg own_num)/laser"/>
-		</node>
+		</node> -->
 
 		#### publish a base_link -> laser transform ###########
   		<node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
@@ -73,18 +73,18 @@ roslaunch husky_pursuit robot.launch \
 		</node> -->
 
 
-		<node machine="$(arg machine)" pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
+		<!-- <node machine="$(arg machine)" pkg="husky_pursuit" type="safety_controller.py" name="safety_controller">
 			<remap from="base_scan" to="scan" />
 			<remap from="cmd_vel" to="husky/cmd_vel" />
-		</node>
+		</node> -->
 
-		<node machine="$(arg machine)" name="camera" pkg="usb_cam" type="usb_cam_node">
+		<!-- <node machine="$(arg machine)" name="camera" pkg="usb_cam" type="usb_cam_node">
 			<param name="video_device" value="/dev/video0" />
 			<param name="image_width" value="1280" />
 			<param name="image_height" value="720" />
 			<param name="pixel_format" value="yuyv" />
 			<param name="camera_frame_id" value="webcam" />
-		</node>
+		</node> -->
 
 		<node machine="$(arg machine)" pkg="husky_pursuit" name="phidget_driver" type="phidget_driver.py" />
 	</group>
