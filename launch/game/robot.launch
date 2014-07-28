@@ -42,7 +42,7 @@ roslaunch husky_pursuit robot.launch \
   		<!-- <node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" /> -->
 
 		#### relay encoder to odom, prefixing frame ids ###########
-		<node machine="$(arg machine)" name="encoder_frame_remapper" type="encoder_frame_remapper" pkg="husky_pursuit">
+		<node machine="$(arg machine)" name="encoder_frame_remapper" type="encoder_frame_remapper.py" pkg="husky_pursuit">
 			<param name="frame_prefix" value="robot_$(arg own_num)" />
 		</node>
 
