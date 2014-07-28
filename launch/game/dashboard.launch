@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 25, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<node pkg="rviz" type="rviz" name="arbiter_rviz" args="-d $(find husky_pursuit)/rviz/huskies.rviz" />
+	<!-- <node pkg="rqt_gui" type="rqt_gui" name="arbiter_rqt_gui" /> -->
+</launch>

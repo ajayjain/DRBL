@@ -32,22 +32,25 @@ def main():
 	
 	listener = tf.TransformListener()
 
-	pub = rospy.Publisher('/target_relative', RelativePosition)
+	relative_topic = rospy.get_param('~relative_topic', 'target_relative')
+	pub = rospy.Publisher(relative_topic, RelativePosition)
 	message = RelativePosition()
 
 	rate = rospy.Rate(10.0)
 	get_params()
-	listener.waitForTransform(own_frame, target_frame, rospy.Time.now(), rospy.Duration(5.0))
+	# listener.waitForTransform(own_frame, target_frame, rospy.Time.now(), rospy.Duration(5.0))
 
 	while not rospy.is_shutdown():
 		get_params()
 
 		try:
-			now = rospy.Time.now()
-			listener.waitForTransform(own_frame, target_frame, now, rospy.Duration(5.0))
-			(trans, rot) = listener.lookupTransform(own_frame, target_frame, now)
-		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+			# now = rospy.Time.now()
+			# listener.waitForTransform(own_frame, target_frame, now, rospy.Duration(5.0))
+			# (trans, rot) = listener.lookupTransform(own_frame, target_frame, now)
+			(trans, rot) = listener.lookupTransform(own_frame, target_frame, rospy.Time(0))
+		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
 			rospy.loginfo("tf exception!")
+			print e
 			continue
 
 		(r, theta) = xy_to_rtheta(trans[:2])
@@ -60,6 +63,7 @@ def main():
 		print "trans", trans
 		print "range", message.range
 		print "bearing", math.degrees(message.bearing)
+		rospy.loginfo("Publishing to %s", relative_topic)
 		pub.publish(message)
 
 		rate.sleep()

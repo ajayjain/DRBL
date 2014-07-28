@@ -7,22 +7,16 @@ ARSENL Lab, Naval Postgraduate School
 
 import roslib; roslib.load_manifest('husky_pursuit')
 import rospy, math
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from husky_pursuit.msg import RelativePosition
 
-# from utils import *
+from utils import rtheta_to_xy
 
 STOP_THRESHOLD = 1
 emergency = False
 stop_vel = Twist()
-
-def get_params():
-	pass
-	# global MAX_LIN, MAX_ANG
-	# MAX_LIN = rospy.get_param('~linear_vel_max',  MAX_LIN)
-	# MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
-
 
 def on_scan(scan):
 	global emergency
@@ -40,34 +34,44 @@ def on_scan(scan):
 		angle += scan.angle_increment
 		end_index += 1
 
+	# sub_ranges = scan.ranges[start_index:end_index]
+	# sub_intensities = scan.intensities[start_index:end_index]
+	# emergency = False
+	# for dist, intensity in zip(sub_ranges, sub_intensities):
+	# 	print dist, intensity
+	# 	if intensity == 1 and dist <= STOP_THRESHOLD:
+	# 		emergency = True
+	# 		break
+
 	sub_ranges = scan.ranges[start_index:end_index]
-	sub_intensities = scan.intensities[start_index:end_index]
 	emergency = False
-	for dist, intensity in zip(sub_ranges, sub_intensities):
-		print dist, intensity
-		if intensity == 1 and dist <= STOP_THRESHOLD:
+	for dist in sub_ranges:
+		if dist >= scan.range_min and dist <= STOP_THRESHOLD:
+			rospy.loginfo("Emergency: distance: %f", dist)
 			emergency = True
 			break
 
-	print emergency
-
-
-# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('~linear_vel_max'), rospy.get_param('~linear_vel_max', 0.8))
-# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('linear_vel_max'), rospy.get_param('linear_vel_max', 0.8))
-# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('/linear_vel_max'), rospy.get_param('/linear_vel_max', 0.8))
+	# rospy.loginfo("emergency status: %s", str(emergency))
 
 def main():
 	global vel_pub
 
 	rospy.init_node("seek")
-	
-	vel_pub = rospy.Publisher('/cmd_vel', Twist) # remap this
-	rospy.Subscriber('/base_scan', LaserScan, on_scan) # remap this in the launch file
 
-	rate = rospy.Rate(500.0)
+	# cmd_topic = rospy.get_param('~cmd_topic', 'husky/cmd_vel')
+	obstacle_topic = rospy.get_param('~obstacle_topic', 'status/obstacle')
+	scan_topic = rospy.get_param('~scan_topic', 'scan')
+	
+	# vel_pub = rospy.Publisher(cmd_topic, Twist) # remap this
+	obstacle_pub = rospy.Publisher(obstacle_topic, Bool) # remap this
+	rospy.Subscriber(scan_topic, LaserScan, on_scan) # remap this in the launch file
+
+	rate = rospy.Rate(10.0)
 	while not rospy.is_shutdown():
-		if emergency:
-			vel_pub.publish(stop_vel)
+		# if emergency:
+			# rospy.loginfo("EMERGENCY: PUBLISHING TO %s, SUBSCRIBED TO %s", cmd_topic, scan_topic)
+			# vel_pub.publish(stop_vel)
+		obstacle_topic.publish(Bool(emergency))
 		rate.sleep()
 
 
