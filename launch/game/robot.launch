@@ -23,6 +23,9 @@ roslaunch husky_pursuit robot.launch \
 			<param name="tf_prefix" value="robot_$(arg own_num)" />
 		</node>
 
+		#### For wheel transforms for rviz
+		<node machine="$(arg machine)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
 		#### husky base launch ###########
 		<include file="$(find husky_pursuit)/launch/game/base.launch">
 			<arg name="port" value="/dev/ttyUSB0" />
@@ -33,8 +36,8 @@ roslaunch husky_pursuit robot.launch \
 		<node machine="$(arg machine)" name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
 			<param name="port" type="string" value="/dev/ttyACM0"/> 
 			<param name="intensity" type="bool" value="true"/>
-			<param name="frame_id" value="robot_$(arg own_num)/base_footprint_rear_bumper_part"/>
-			#<param name="frame_id" value="robot_$(arg own_num)/laser"/>
+			<!-- <param name="frame_id" value="robot_$(arg own_num)/base_footprint_front_bumper_part"/> -->
+			<param name="frame_id" value="robot_$(arg own_num)/laser"/>
 		</node>
 
 		#### publish a base_link -> laser transform ###########
@@ -43,7 +46,7 @@ roslaunch husky_pursuit robot.launch \
 
 		#### relay encoder to odom, prefixing frame ids ###########
 		<node machine="$(arg machine)" name="encoder_frame_remapper" type="encoder_frame_remapper.py" pkg="husky_pursuit">
-			<param name="frame_prefix" value="robot_$(arg own_num)" />
+			<param name="frame_prefix" value="robot_$(arg own_num)/" />
 		</node>
 
 		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">

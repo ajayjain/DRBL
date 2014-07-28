@@ -27,6 +27,7 @@ def get_params():
     global max_range
     global bearing_tolerance
     global yaw_tolerance
+    global relative_topic
 
     max_range = rospy.get_param('~max_fire_range', max_range)
     bearing_tolerance = rospy.get_param('~bearing_tolerance', bearing_tolerance)

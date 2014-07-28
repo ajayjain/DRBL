@@ -36,7 +36,7 @@ ARSENL Lab, Naval Postgraduate School
 
 	#### 6: ROBOT - BEHAVIORS AND GUNS ###########
 	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">
-		<!-- <arg name="wander" value="true" /> -->
+		<arg name="seek" value="true" />
 		<arg name="linear_vel_max" value=".1" />
 		<arg name="angular_vel_max" value=".3" />
 		<!-- <arg name="machine" value="robot_0" /> -->
@@ -44,7 +44,7 @@ ARSENL Lab, Naval Postgraduate School
 	<include file="$(find husky_pursuit)/launch/game/gun.launch" />
 
 	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">
-		<arg name="serpentine" value="true" />
+		<!-- <arg name="serpentine" value="true" /> -->
 		<arg name="linear_vel_max" value=".1" />
 		<arg name="angular_vel_max" value=".4" />
 		
