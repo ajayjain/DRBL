@@ -53,4 +53,7 @@ ARSENL Lab, Naval Postgraduate School
 		<arg name="machine" value="robot_1" />
 		<arg name="relative_topic" value="/robot_1/relative0" />
 	</include>
+
+	#### 8/9: SAFTEY CONTROLLERS ###########
+	<include file="$(find husky_pursuit)/launch/game/safety_controller.launch" />
 </launch>

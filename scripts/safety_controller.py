@@ -15,63 +15,46 @@ from husky_pursuit.msg import RelativePosition
 from utils import rtheta_to_xy
 
 STOP_THRESHOLD = 1
+HALF_ROBOT_WIDTH = .7 / 2 # meters, actually, it's 670 / 2 mm
 emergency = False
-stop_vel = Twist()
+vel_pub = None
 
 def on_scan(scan):
 	global emergency
 
-	num_ranges = len(scan.ranges)
-
-	angle = scan.angle_min
-	start_index = 0
-	while angle < math.radians(-10) and start_index < num_ranges:
-		angle += scan.angle_increment
-		start_index += 1
-
-	end_index = start_index
-	while angle < math.radians(10) and end_index < num_ranges:
-		angle += scan.angle_increment
-		end_index += 1
-
-	# sub_ranges = scan.ranges[start_index:end_index]
-	# sub_intensities = scan.intensities[start_index:end_index]
-	# emergency = False
-	# for dist, intensity in zip(sub_ranges, sub_intensities):
-	# 	print dist, intensity
-	# 	if intensity == 1 and dist <= STOP_THRESHOLD:
-	# 		emergency = True
-	# 		break
-
-	sub_ranges = scan.ranges[start_index:end_index]
+	theta = scan.angle_min
+	angles = [scan.angle_min + i * scan.angle_increment for i in range(len(scan.ranges))]
 	emergency = False
-	for dist in sub_ranges:
-		if dist >= scan.range_min and dist <= STOP_THRESHOLD:
-			rospy.loginfo("Emergency: distance: %f", dist)
-			emergency = True
-			break
+	for polar in zip(scan.ranges, angles):
+		if math.radians(-30) < polar[1] < math.radians(30):
+			x, y = rtheta_to_xy(polar)
+			if abs(y) <= HALF_ROBOT_WIDTH and x <= STOP_THRESHOLD:
+				rospy.loginfo("Emergency: (%f m, %f deg), (%f m, %f m)", polar[0], math.degrees(polar[1]), x, y)
+				emergency = True
 
-	# rospy.loginfo("emergency status: %s", str(emergency))
+# Only relay velocities when there isn't an emergency
+def on_vel(vel):
+	rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
+	vel_pub.publish(Twist() if emergency else vel)
 
 def main():
 	global vel_pub
 
 	rospy.init_node("seek")
 
-	# cmd_topic = rospy.get_param('~cmd_topic', 'husky/cmd_vel')
+	behavior_cmd_topic = rospy.get_param('~behavior_cmd_topic', 'behavior_vel')
+	robot_cmd_topic = rospy.get_param('~robot_cmd_topic', 'husky/cmd_vel')
 	obstacle_topic = rospy.get_param('~obstacle_topic', 'status/obstacle')
 	scan_topic = rospy.get_param('~scan_topic', 'scan')
 	
-	# vel_pub = rospy.Publisher(cmd_topic, Twist) # remap this
-	obstacle_pub = rospy.Publisher(obstacle_topic, Bool) # remap this
-	rospy.Subscriber(scan_topic, LaserScan, on_scan) # remap this in the launch file
+	vel_pub = rospy.Publisher(robot_cmd_topic, Twist) # global
+	obstacle_pub = rospy.Publisher(obstacle_topic, Bool)
+	rospy.Subscriber(behavior_cmd_topic, Twist, on_vel)
+	rospy.Subscriber(scan_topic, LaserScan, on_scan)
 
 	rate = rospy.Rate(10.0)
 	while not rospy.is_shutdown():
-		# if emergency:
-			# rospy.loginfo("EMERGENCY: PUBLISHING TO %s, SUBSCRIBED TO %s", cmd_topic, scan_topic)
-			# vel_pub.publish(stop_vel)
-		obstacle_topic.publish(Bool(emergency))
+		obstacle_pub.publish(Bool(emergency))
 		rate.sleep()
 
 

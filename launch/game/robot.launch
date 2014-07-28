@@ -72,12 +72,6 @@ roslaunch husky_pursuit robot.launch \
 
 		</node> -->
 
-
-		<node pkg="husky_pursuit" type="safety_controller.py" name="safety_controller" output="screen">
-			<!-- <param name="scan_topic" value="scan" /> -->
-			<!-- <param name="cmd_topic" value="husky/cmd_vel" /> -->
-		</node>
-
 		<!-- <node machine="$(arg machine)" name="camera" pkg="usb_cam" type="usb_cam_node">
 			<param name="video_device" value="/dev/video0" />
 			<param name="image_width" value="1280" />

@@ -20,7 +20,7 @@ ARSENL Lab, Naval Postgraduate School
 	<group ns="robot_$(arg own_num)">
 		#### CONDITIONALLY LAUNCH BEHAVIORS ###########
 		<node machine="$(arg machine)" pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			<remap from="/cmd_vel" to="behavior_vel"/>
 			<remap from="/target_relative" to="relative$(arg target_num)"/>
 			
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
@@ -28,7 +28,7 @@ ARSENL Lab, Naval Postgraduate School
 		</node>
 
 		<node machine="$(arg machine)" pkg="husky_pursuit" type="pure_flee.py" name="flee_node" output="screen" if="$(arg flee)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			<remap from="/cmd_vel" to="behavior_vel"/>
 			<remap from="/target_relative" to="relative$(arg target_num)"/>
 			
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
@@ -36,14 +36,14 @@ ARSENL Lab, Naval Postgraduate School
 		</node>
 
 		<node machine="$(arg machine)" pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen" if="$(arg wander)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			<remap from="/cmd_vel" to="behavior_vel"/>
 			
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
 		</node>
 
 		<node machine="$(arg machine)" pkg="husky_pursuit" type="serpentine.py" name="serpentine_node" output="screen" if="$(arg serpentine)">
-			<remap from="/cmd_vel" to="husky/cmd_vel"/>
+			<remap from="/cmd_vel" to="behavior_vel"/>
 			
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
