@@ -41,9 +41,12 @@ roslaunch husky_pursuit robot.launch \
   		<node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
   		<!-- <node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" /> -->
 
+		#### relay encoder to odom, prefixing frame ids ###########
+		<node machine="$(arg machine)" name="encoder_frame_remapper" type="encoder_frame_remapper" pkg="husky_pursuit">
+			<param name="frame_prefix" value="robot_$(arg own_num)" />
+		</node>
 
 		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
-			<remap from="odom" to="encoder" />
 			<rosparam>
                 freq: 10.0
                 sensor_timeout: 1.0
