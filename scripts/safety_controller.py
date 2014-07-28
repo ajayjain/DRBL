@@ -29,12 +29,12 @@ def on_scan(scan):
 		if math.radians(-30) < polar[1] < math.radians(30):
 			x, y = rtheta_to_xy(polar)
 			if abs(y) <= HALF_ROBOT_WIDTH and x <= STOP_THRESHOLD:
-				rospy.loginfo("Emergency: (%f m, %f deg), (%f m, %f m)", polar[0], math.degrees(polar[1]), x, y)
+				# rospy.loginfo("Emergency: (%f m, %f deg), (%f m, %f m)", polar[0], math.degrees(polar[1]), x, y)
 				emergency = True
 
 # Only relay velocities when there isn't an emergency
 def on_vel(vel):
-	rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
+	# rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
 	vel_pub.publish(Twist() if emergency else vel)
 
 def main():
