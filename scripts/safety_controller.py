@@ -16,7 +16,7 @@ from utils import rtheta_to_xy
 
 STOP_THRESHOLD = 1
 HALF_ROBOT_WIDTH = .7 / 2 # meters, actually, it's 670 / 2 mm
-emergency = True
+emergency = True # Emergency until first scan
 vel_pub = None
 
 def on_scan(scan):

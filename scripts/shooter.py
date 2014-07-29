@@ -40,10 +40,10 @@ def on_relative_position(rel):
     if rel.range > max_range:
         rospy.loginfo("Out of range: %f", rel.range)
         return
-    if abs(rel.bearing) > bearing_tolerance:
+    if (rel.bearing % math.pi) > bearing_tolerance:
         rospy.loginfo("Out of bearing_tolerance: bearing = %f, tolerance = %f", rel.bearing, bearing_tolerance)
         return
-    if abs(rel.yaw) > yaw_tolerance:
+    if (rel.yaw % math.pi) > yaw_tolerance:
         rospy.loginfo("Out of yaw_tolerance: yaw = %f, tolerance = %f", rel.yaw, yaw_tolerance)
         return
     rospy.loginfo("SHOOTING: PUBLISHING FIRE MSG!")
