@@ -19,12 +19,12 @@ roslaunch husky_pursuit robot.launch \
 	<arg name="machine" default="robot_$(arg own_num)" />
 
 	<group ns="robot_$(arg own_num)">
-		<node machine="$(arg machine)" name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
+		<node machine="$(arg machine)" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true">
 			<param name="tf_prefix" value="robot_$(arg own_num)" />
 		</node>
 
 		#### For wheel transforms for rviz
-		<node machine="$(arg machine)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+		<!-- <node machine="$(arg machine)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
 
 		#### husky base launch ###########
 		<include file="$(find husky_pursuit)/launch/game/base.launch">
@@ -41,15 +41,15 @@ roslaunch husky_pursuit robot.launch \
 		</node>
 
 		#### publish a base_link -> laser transform ###########
-  		<node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" />
+  		<node machine="$(arg machine)" pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.25 0 0.25 0 0 0 /robot_$(arg own_num)/base_link /robot_$(arg own_num)/laser 40" respawn="true"/>
   		<!-- <node pkg="tf" type="static_transform_publisher" name="odom_footprint_link" args="0 0 0 0 0 0 /robot_$(arg own_num)/odom /robot_$(arg own_num)/base_footprint 40" /> -->
 
 		#### relay encoder to odom, prefixing frame ids ###########
-		<node machine="$(arg machine)" name="encoder_frame_remapper" type="encoder_frame_remapper.py" pkg="husky_pursuit">
+		<node machine="$(arg machine)" name="encoder_frame_remapper" type="encoder_frame_remapper.py" pkg="husky_pursuit" respawn="true">
 			<param name="frame_prefix" value="robot_$(arg own_num)/" />
 		</node>
 
-		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" respawn="true">
 			<rosparam>
                 freq: 10.0
                 sensor_timeout: 1.0

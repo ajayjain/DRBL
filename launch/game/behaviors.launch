@@ -19,7 +19,7 @@ ARSENL Lab, Naval Postgraduate School
 
 	<group ns="robot_$(arg own_num)">
 		#### CONDITIONALLY LAUNCH BEHAVIORS ###########
-		<node machine="$(arg machine)" pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)">
+		<node machine="$(arg machine)" pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen" if="$(arg seek)" respawn="true">
 			<remap from="/cmd_vel" to="behavior_vel"/>
 			<remap from="/target_relative" to="relative$(arg target_num)"/>
 			
@@ -27,7 +27,7 @@ ARSENL Lab, Naval Postgraduate School
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
 		</node>
 
-		<node machine="$(arg machine)" pkg="husky_pursuit" type="pure_flee.py" name="flee_node" output="screen" if="$(arg flee)">
+		<node machine="$(arg machine)" pkg="husky_pursuit" type="pure_flee.py" name="flee_node" output="screen" if="$(arg flee)" respawn="true">
 			<remap from="/cmd_vel" to="behavior_vel"/>
 			<remap from="/target_relative" to="relative$(arg target_num)"/>
 			
@@ -35,14 +35,14 @@ ARSENL Lab, Naval Postgraduate School
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
 		</node>
 
-		<node machine="$(arg machine)" pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen" if="$(arg wander)">
+		<node machine="$(arg machine)" pkg="husky_pursuit" type="wander.py" name="wander_node" output="screen" if="$(arg wander)" respawn="true">
 			<remap from="/cmd_vel" to="behavior_vel"/>
 			
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
 		</node>
 
-		<node machine="$(arg machine)" pkg="husky_pursuit" type="serpentine.py" name="serpentine_node" output="screen" if="$(arg serpentine)">
+		<node machine="$(arg machine)" pkg="husky_pursuit" type="serpentine.py" name="serpentine_node" output="screen" if="$(arg serpentine)" respawn="true">
 			<remap from="/cmd_vel" to="behavior_vel"/>
 			
 			<param name="linear_vel_max" value="$(arg linear_vel_max)" />

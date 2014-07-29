@@ -8,7 +8,7 @@ ARSENL Lab, Naval Postgraduate School
   <arg name="port" default="$(optenv HUSKY_PORT /dev/prolific)" />
   <arg name="machine" default="robot_0" />
 
-  <node machine="$(arg machine)" pkg="clearpath_base" type="kinematic_node" name="husky_kinematic" ns="husky">
+  <node machine="$(arg machine)" pkg="clearpath_base" type="kinematic_node" name="husky_kinematic" ns="husky" respawn="true">
     <param name="port" value="$(arg port)" />
     <rosparam>    
       cmd_fill: True
@@ -23,13 +23,13 @@ ARSENL Lab, Naval Postgraduate School
   </node>
 
   <!-- Publish diagnostics information from low-level MCU outputs -->
-  <node machine="$(arg machine)" pkg="husky_base" name="husky_base_diagnostics" type="diagnostics_publisher" />
+  <node machine="$(arg machine)" pkg="husky_base" name="husky_base_diagnostics" type="diagnostics_publisher" respawn="true" />
 	
   <!-- Publish wheel odometry from MCU encoder data -->
-  <node machine="$(arg machine)" pkg="husky_base" name="husky_basic_odom" type="basic_odom_publisher" />
+  <node machine="$(arg machine)" pkg="husky_base" name="husky_basic_odom" type="basic_odom_publisher" respawn="true" />
   
   <!-- Diagnostic Aggregator -->
-  <node machine="$(arg machine)" pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
+  <node machine="$(arg machine)" pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator" respawn="true">
     <rosparam command="load" file="$(find husky_base)/config/diagnostics.yaml"/>
   </node>
 </launch>

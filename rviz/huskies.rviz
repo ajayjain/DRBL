@@ -31,7 +31,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Robot 1 LaserScan
+    SyncSource: Robot 0 LaserScan
 Visualization Manager:
   Class: ""
   Displays:
@@ -150,23 +150,23 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
+        Max Value: 0.394925
+        Min Value: 0.394925
         Value: true
       Axis: Z
       Channel Name: intensity
       Class: rviz/LaserScan
       Color: 0; 0; 255
-      Color Transformer: ""
+      Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 1
+      Max Intensity: 4633
       Min Color: 0; 0; 0
-      Min Intensity: 1
+      Min Intensity: 49
       Name: Robot 0 LaserScan
-      Position Transformer: ""
+      Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
@@ -361,22 +361,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.73856
+      Distance: 5.12967
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.43051
-        Y: 1.27589
-        Z: 1.93731
+        X: 2.33841
+        Y: 0.177675
+        Z: 0.715168
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.245398
+      Pitch: 0.5754
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.0204
+      Yaw: 2.04039
     Saved: ~
 Window Geometry:
   Displays:
