@@ -42,22 +42,22 @@ def update_health(e):
 	publish_health()
 
 def main():
-	# global health_pub, lives
+	global health_pub, lives
 
 	rospy.init_node("phidget_driver")
 
-	# phidgets.phidgetsLauncher(input_changed_callback=update_health)
-	# lives = [True for _ in range(6)]
+	phidgets.phidgetsLauncher(input_changed_callback=update_health)
+	lives = [True for _ in range(6)]
 	# phidgets.interfaceKit.setOnInputChangeHandler(update_health)
 	
-	# rospy.Subscriber("status/fire", Bool, on_message)
-	# health_pub = rospy.Publisher("status/health", UInt8)
+	rospy.Subscriber("status/fire", Bool, on_message)
+	health_pub = rospy.Publisher("status/health", UInt8)
 
 	rospy.spin()
 	
-	# rospy.loginfo("Closing...")
-	# phidgets.closePhidget()
-	# rospy.loginfo("Done.")
+	rospy.loginfo("Closing...")
+	phidgets.closePhidget()
+	rospy.loginfo("Done.")
 
 
 if __name__ == "__main__":

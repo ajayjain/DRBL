@@ -18,6 +18,8 @@ STOP_THRESHOLD = 1
 HALF_ROBOT_WIDTH = .7 / 2 # meters, actually, it's 670 / 2 mm
 emergency = True # Emergency until first scan
 vel_pub = None
+turn = Twist()
+turn.angular.z = -0.1
 
 def on_scan(scan):
 	global emergency
@@ -35,7 +37,7 @@ def on_scan(scan):
 # Only relay velocities when there isn't an emergency
 def on_vel(vel):
 	# rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
-	vel_pub.publish(Twist() if emergency else vel)
+	vel_pub.publish(turn if emergency else vel)
 
 def main():
 	global vel_pub
