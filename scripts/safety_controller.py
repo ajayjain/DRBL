@@ -17,13 +17,15 @@ from utils import rtheta_to_xy
 STOP_THRESHOLD = 1
 HALF_ROBOT_WIDTH = .7 / 2 # meters, actually, it's 670 / 2 mm
 emergency = True # Emergency until first scan
+got_first_scan = False
 vel_pub = None
 turn = Twist()
 turn.angular.z = -0.1
 
 def on_scan(scan):
-	global emergency
+	global emergency, got_first_scan
 
+	got_first_scan = True
 	theta = scan.angle_min
 	angles = [scan.angle_min + i * scan.angle_increment for i in range(len(scan.ranges))]
 	emergency = False
@@ -36,8 +38,11 @@ def on_scan(scan):
 
 # Only relay velocities when there isn't an emergency
 def on_vel(vel):
+	if got_first_scan:
+		vel_pub.publish(turn if emergency else vel)
+	else:
+		vel_pub.publish(Twist())
 	# rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
-	vel_pub.publish(turn if emergency else vel)
 
 def main():
 	global vel_pub
