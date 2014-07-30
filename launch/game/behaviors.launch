@@ -49,4 +49,10 @@ ARSENL Lab, Naval Postgraduate School
 			<param name="angular_vel_max" value="$(arg angular_vel_max)" />
 		</node>
 	</group>
+	<!-- 
+machine="$(arg machine)" 
+machine="$(arg machine)" 
+machine="$(arg machine)" 
+machine="$(arg machine)" 
+	 -->
 </launch>

@@ -6,7 +6,7 @@ ARSENL Lab, Naval Postgraduate School
 '''
 
 import roslib; roslib.load_manifest('husky_pursuit')
-import rospy, tf, math
+import rospy, math
 import geometry_msgs.msg
 from husky_pursuit.msg import RelativePosition
 
@@ -49,7 +49,7 @@ def seek(translation, maxlin, maxang):
 def on_relative(rel_pos):
 	get_params()
 	rtheta = [rel_pos.range, rel_pos.bearing]
-	cmd = seek(rtheta, MAX_LIN, MAX_ANG)
+	cmd = seek_rtheta(rtheta, MAX_LIN, MAX_ANG)
 	vel_pub.publish(cmd)
 
 	rospy.loginfo('linear vel: %f', cmd.linear.x)
@@ -62,10 +62,8 @@ def on_relative(rel_pos):
 def main():
 	rospy.init_node("seek")
 	
-	listener = tf.TransformListener()
-
 	global vel_pub
-	vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist) # remap this
+	vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist, latch=True) # remap this
 	rospy.Subscriber('/target_relative', RelativePosition, on_relative) # remap this in the launch file
 
 	rospy.spin()

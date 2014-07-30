@@ -83,7 +83,7 @@ def main():
 	
 	listener = tf.TransformListener()
 
-	vel = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist)
+	vel = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist, latch=True)
 	rospy.Subscriber('/target_odom', nav_msgs.msg.Odometry, on_target_odom)
 	rospy.Subscriber('/own_odom', nav_msgs.msg.Odometry, on_own_odom)
 

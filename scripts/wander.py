@@ -32,7 +32,7 @@ def random_translation():
 def main():
 	rospy.init_node("wander_node")
 
-	vel_pub = rospy.Publisher(CMD_TOPIC, geometry_msgs.msg.Twist)
+	vel_pub = rospy.Publisher(CMD_TOPIC, geometry_msgs.msg.Twist, latch=True)
 
 	rate = rospy.Rate(CMD_FREQ)
 	count = LOOP_ON_ITER

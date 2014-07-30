@@ -6,7 +6,7 @@ ARSENL Lab, Naval Postgraduate School
 '''
 
 import roslib; roslib.load_manifest('husky_pursuit')
-import rospy, tf, math
+import rospy, math
 import geometry_msgs.msg
 from husky_pursuit.msg import RelativePosition
 
@@ -47,10 +47,8 @@ def main():
 
 	rospy.init_node("flee")
 	
-	listener = tf.TransformListener()
-
 	rospy.Subscriber('/target_relative', RelativePosition, on_relative) # remap this in the launch file
-	vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist)
+	vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist, latch=True)
 
 	rospy.spin()
 

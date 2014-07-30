@@ -32,7 +32,7 @@ def main():
 
 	get_params()
 
-	vel_pub = rospy.Publisher(CMD_TOPIC, geometry_msgs.msg.Twist)
+	vel_pub = rospy.Publisher(CMD_TOPIC, geometry_msgs.msg.Twist, latch=True)
 	cmd_vel = geometry_msgs.msg.Twist()
 	cmd_vel.linear.x = MAX_LINEAR
 	cmd_vel.angular.z = MAX_ANGULAR

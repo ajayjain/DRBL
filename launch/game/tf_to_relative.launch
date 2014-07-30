@@ -6,7 +6,7 @@ ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
 	<group ns="robot_0">
-		<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01" respawn="true" output="screen">
+		<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01" respawn="true">
 			<param name="own_tf_prefix" value="robot_0" />
 			<param name="target_tf_prefix" value="robot_1" />
 			<param name="relative_topic" value="relative1" />
@@ -14,7 +14,7 @@ ARSENL Lab, Naval Postgraduate School
 	</group>
 
 	<group ns="robot_1">
-		<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10" respawn="true" output="screen">
+		<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10" respawn="true">
 			<param name="own_tf_prefix" value="robot_1" />
 			<param name="target_tf_prefix" value="robot_0" />
 			<param name="relative_topic" value="relative0" />

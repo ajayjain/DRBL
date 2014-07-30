@@ -31,6 +31,8 @@ def main():
 
 	relative_topic = rospy.get_param('~relative_topic', 'target_relative')
 
+	silent = rospy.get_param('~silent', True) # silence node logs by default
+
 	listener = tf.TransformListener()
 	pub = rospy.Publisher(relative_topic, RelativePosition)
 	message = RelativePosition()
@@ -47,21 +49,23 @@ def main():
 			# (trans, rot) = listener.lookupTransform(own_frame, target_frame, now)
 			(trans, rot) = listener.lookupTransform(own_frame, target_frame, rospy.Time(0))
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
-			rospy.loginfo("tf exception: %s", e)
+			if not silent:
+				rospy.loginfo("tf exception: %s", e)
 			# Allow usage of old data if data was recieved at some point
 			if trans == None or rot == None:
 				continue
 
 		print own_frame, target_frame, trans
 		(x, y) = trans[:2]
-		# (r, theta) = xy_to_rtheta((x, y))
-		(r, theta) = xy_to_rtheta((x, y * -1))
+		(r, theta) = xy_to_rtheta((x, y))
+		# (r, theta) = xy_to_rtheta((x, y * -1))
 		theta = theta % (2 * math.pi)
 		message.range = r
 		message.bearing = theta
 
 		(message.roll, message.pitch, message.yaw) = map(lambda x: x % (2 * math.pi), euler_from_quaternion(rot))
 
+		# if not silent:	
 		rospy.loginfo("To %s:\nrot %s\ntrans %s\nrtheta %s\nrange %s\nbearing %s",
 			relative_topic,
 			tf.transformations.euler_from_quaternion(rot),

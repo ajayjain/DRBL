@@ -13,6 +13,7 @@ ARSENL Lab, Naval Postgraduate School
 		
 		<node machine="$(arg machine)" pkg="husky_pursuit" name="shooter" type="shooter.py" respawn="true">
 			<param name="relative_topic" value="$(arg relative_topic)" />
+			<!-- <param name="yaw_tolerance" value="" /> # in radians-->
 			<!-- <remap from="/target_relative" to="$(arg relative_topic)"/> -->
 		</node>
 	</group>

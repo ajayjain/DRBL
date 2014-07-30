@@ -51,7 +51,7 @@ def main():
 	# phidgets.interfaceKit.setOnInputChangeHandler(update_health)
 	
 	rospy.Subscriber("status/fire", Bool, on_message)
-	health_pub = rospy.Publisher("status/health", UInt8)
+	health_pub = rospy.Publisher("status/health", UInt8, latch=True)
 
 	rospy.spin()
 	
