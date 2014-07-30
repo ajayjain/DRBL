@@ -24,7 +24,8 @@ def get_params():
 	MAX_ANG = rospy.get_param('~angular_vel_max', MAX_ANG)
 
 def flee_rtheta(rtheta, maxlin, maxang):
-	inverted = [rtheta[0] * -1, rtheta[1]]
+	inverted = [rtheta[0], (rtheta[1] + math.pi) % (2 * math.pi)]
+	rospy.loginfo("rtheta %s inverted %s", rtheta, inverted)
 	return seek_rtheta(inverted, maxlin, maxang)
 
 def flee(translation, maxlin, maxang):

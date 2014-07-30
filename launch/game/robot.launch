@@ -50,6 +50,7 @@ roslaunch husky_pursuit robot.launch \
 		</node>
 
 		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" respawn="true">
+			<remap from="odom" to="encoder" />
 			<rosparam>
                 freq: 10.0
                 sensor_timeout: 1.0
@@ -57,6 +58,7 @@ roslaunch husky_pursuit robot.launch \
                 odom_used: true
                 vo_used: false
                 imu_used: false
+                sensor_timeout: 5
             </rosparam>
            	<param name="output_frame" value="odom_combined" />
            	<param name="tf_prefix" value="robot_$(arg own_num)" />
