@@ -64,7 +64,7 @@ roslaunch husky_pursuit robot.launch \
 		    <param name="max_iterations" value="10"/>
 		</node>
 
-		<node machine="$(arg machine)" pkg="husky_pursuit" type="pose2d_to_odometry.py" name="pose2d_to_odometry" output="screen" respawn="true" />
+		<node pkg="husky_pursuit" type="pose2d_to_odometry.py" name="pose2d_to_odometry" output="screen" respawn="true" />
 
 		<node machine="$(arg machine)" pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" respawn="true">
 			<remap from="odom" to="encoder" />

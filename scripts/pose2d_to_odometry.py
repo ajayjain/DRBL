@@ -25,13 +25,28 @@ def on_pose(pose):
 	odom.pose.pose.position.x = pose.x
 	odom.pose.pose.position.y = pose.y
 	
-	quat = quaternion_from_euler(0, 0, theta)
-	odom.pose.pose.orientation.x = quat[0]
-	odom.pose.pose.orientation.y = quat[1]
-	odom.pose.pose.orientation.z = quat[2]
-	odom.pose.pose.orientation.w = quat[3]
+	z = math.sin(pose.theta / 2)
+	w = math.cos(pose.theta / 2)
+	# Normalize quaternion
+	mag = math.hypot(z, w)
+	odom.pose.pose.orientation.z = z / mag
+	odom.pose.pose.orientation.w = w / mag
+
+	# quat = quaternion_from_euler(.001, .001, theta)
+	# odom.pose.pose.orientation.x = quat[0]
+	# odom.pose.pose.orientation.y = quat[1]
+	# odom.pose.pose.orientation.z = quat[2]
+	# odom.pose.pose.orientation.w = quat[3]
 
 	odom_pub.publish(odom)
+
+# def convert
+
+#   u0 = sqrt(cos(e2*PI/180)*cos(e1*PI/180)+cos(e2*PI/180)*cos(e3*PI/180)-sin(e2*PI/180)*sin(e1*PI/180)*sin(e3*PI/180)+cos(e1*PI/180)* cos(e3*PI/180)+1)/2;
+#   u1 = (cos(e1*PI/180)*sin(e3*PI/180)+cos(e2*PI/180)*sin(e3*PI/180)+sin(e2*PI/180)*sin(e1*PI/180)*cos(e3*PI/180))/sqrt(cos(e2*PI/180)* cos(e1*PI/180)+cos(e2*PI/180)*cos(e3*PI/180)-sin(e2*PI/180)*sin(e1*PI/180)*sin(e3*PI/180)+cos(e1*PI/180)*cos(e3*PI/180)+1)/2;
+#   u2 = (sin(e2*PI/180)*sin(e3*PI/180)-cos(e2*PI/180)*sin(e1*PI/180)*cos(e3*PI/180)-sin(e1*PI/180))/sqrt(cos(e2*PI/180)*cos(e1*PI/180)+ cos(e2*PI/180)*cos(e3*PI/180)-sin(e2*PI/180)*sin(e1*PI/180)*sin(e3*PI/180)+cos(e1*PI/180)*cos(e3*PI/180)+1)/2;
+#   u3 = (sin(e2*PI/180)*cos(e1*PI/180)+sin(e2*PI/180)*cos(e3*PI/180)+cos(e2*PI/180)*sin(e1*PI/180)*sin(e3*PI/180))/sqrt(cos(e2*PI/180)* cos(e1*PI/180)+cos(e2*PI/180)*cos(e3*PI/180)-sin(e2*PI/180)*sin(e1*PI/180)*sin(e3*PI/180)+cos(e1*PI/180)*cos(e3*PI/180)+1)/2;
+
 
 def main():
 	rospy.init_node("pose2d_to_odometry")
@@ -51,13 +66,13 @@ def main():
 							0, 0, o, 0, 0, 0, # z doesn't change
 							0, 0, 0, o, 0, 0, # constant roll
 							0, 0, 0, 0, o, 0, # constant pitch
-							0, 0, 0, 0, 0, 0.3] # guess - .3 radians rotation cov
-	odom.twist.covariance = [99999, 0, 0, 0, 0, 0,
-							 0, 99999, 0, 0, 0, 0,
-							 0, 0, 99999, 0, 0, 0, # large covariances - no data
-							 0, 0, 0, 99999, 0, 0,
-							 0, 0, 0, 0, 99999, 0,
-							 0, 0, 0, 0, 0, 99999]
+							0, 0, 0, 0, 0, o] # guess - .3 radians rotation cov
+	odom.twist.covariance = [100, 0, 0, 0, 0, 0,
+							 0, 100, 0, 0, 0, 0,
+							 0, 0, 100, 0, 0, 0, # large covariances - no data
+							 0, 0, 0, 100, 0, 0,
+							 0, 0, 0, 0, 100, 0,
+							 0, 0, 0, 0, 0, 100]
 
 
 
