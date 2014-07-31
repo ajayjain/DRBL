@@ -75,7 +75,7 @@ roslaunch husky_pursuit robot.launch \
                 odom_used: true
                 vo_used: true
                 imu_used: false
-                sensor_timeout: 5
+                sensor_timeout: 8
             </rosparam>
            	<param name="output_frame" value="odom_combined" />
            	<param name="tf_prefix" value="robot_$(arg own_num)" />

@@ -69,7 +69,10 @@ def main():
 
 	rate = rospy.Rate(40.0)
 	while not rospy.is_shutdown():
-		vel_time_elapsed = rospy.Time.now() - last_vel_time
+		try:
+			vel_time_elapsed = rospy.Time.now() - last_vel_time
+		except TypeError:
+			vel_time_elapsed = VEL_TIMEOUT # Stop robot - no vel messages yet
 
 		obstacle_pub.publish(Bool(emergency))
 
