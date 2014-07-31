@@ -45,7 +45,7 @@ def on_scan(scan):
 # Only relay velocities when there isn't an emergency
 def on_vel(vel):
 	global last_vel, last_vel_time
-
+	rospy.loginfo("Got vel: %f, %f", vel.linear.x, vel.angular.z)
 	last_vel = vel
 	last_vel_time = rospy.Time.now()
 	# rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
@@ -69,10 +69,6 @@ def main():
 
 	rate = rospy.Rate(40.0)
 	while not rospy.is_shutdown():
-		try:
-			vel_time_elapsed = rospy.Time.now() - last_vel_time
-		except TypeError:
-			vel_time_elapsed = VEL_TIMEOUT # Stop robot - no vel messages yet
 
 		obstacle_pub.publish(Bool(emergency))
 
@@ -81,7 +77,7 @@ def main():
 			if emergency:
 				vel_pub.publish(turn)
 			# move for (default) 1 sec at last behavior velocity
-			elif vel_time_elapsed < VEL_TIMEOUT:
+			elif last_vel_time == None or now - last_vel_time < VEL_TIMEOUT:
 				vel_pub.publish(last_vel)
 			else:
 				rospy.logwarn("Velocity command timeout, publishing stop message")
