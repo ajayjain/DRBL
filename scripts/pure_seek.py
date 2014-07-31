@@ -26,7 +26,7 @@ def seek_rtheta(rtheta, maxlin, maxang):
 	cmd = geometry_msgs.msg.Twist()
 
 	cmd.linear.x = truncate(rtheta[0], maxlin)
-	cmd.angular.z = truncate(rtheta[1], maxang)
+	cmd.angular.z = truncate(-1 * rtheta[1], maxang) # negate bearing - ccw is positive vel
 
 	return cmd
 
@@ -54,10 +54,6 @@ def on_relative(rel_pos):
 
 	rospy.loginfo('linear vel: %f', cmd.linear.x)
 	rospy.loginfo('angular vel: %f', cmd.angular.z)
-
-# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('~linear_vel_max'), rospy.get_param('~linear_vel_max', 0.8))
-# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('linear_vel_max'), rospy.get_param('linear_vel_max', 0.8))
-# rospy.loginfo('Parameter %s has value %s', rospy.resolve_name('/linear_vel_max'), rospy.get_param('/linear_vel_max', 0.8))
 
 def main():
 	rospy.init_node("seek")

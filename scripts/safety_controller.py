@@ -19,8 +19,14 @@ HALF_ROBOT_WIDTH = .7 / 2 # meters, actually, it's 670 / 2 mm
 emergency = True # Emergency until first scan
 got_first_scan = False
 vel_pub = None
+
 turn = Twist()
-turn.angular.z = -0.1
+turn.angular.z = 0.3
+
+stop = Twist()
+
+last_vel = None
+last_vel_time = None
 
 def on_scan(scan):
 	global emergency, got_first_scan
@@ -38,10 +44,10 @@ def on_scan(scan):
 
 # Only relay velocities when there isn't an emergency
 def on_vel(vel):
-	if got_first_scan:
-		vel_pub.publish(turn if emergency else vel)
-	else:
-		vel_pub.publish(Twist())
+	global last_vel, last_vel_time
+
+	last_vel = vel
+	last_vel_time = rospy.Time.now()
 	# rospy.loginfo("Got vel: (%f, %f), emergency status: %s", vel.linear.x, vel.angular.z, str(emergency))
 
 def main():
@@ -53,15 +59,34 @@ def main():
 	robot_cmd_topic = rospy.get_param('~robot_cmd_topic', 'husky/cmd_vel')
 	obstacle_topic = rospy.get_param('~obstacle_topic', 'status/obstacle')
 	scan_topic = rospy.get_param('~scan_topic', 'scan')
+
+	VEL_TIMEOUT = rospy.get_param('~velocity_timeout', 1)
 	
 	vel_pub = rospy.Publisher(robot_cmd_topic, Twist) # global
 	obstacle_pub = rospy.Publisher(obstacle_topic, Bool)
 	rospy.Subscriber(behavior_cmd_topic, Twist, on_vel)
 	rospy.Subscriber(scan_topic, LaserScan, on_scan)
 
-	rate = rospy.Rate(10.0)
+	rate = rospy.Rate(40.0)
 	while not rospy.is_shutdown():
+		vel_time_elapsed = rospy.Time.now() - last_vel_time
+
 		obstacle_pub.publish(Bool(emergency))
+
+		# if emergency and got scan data, turn
+		if got_first_scan:
+			if emergency:
+				vel_pub.publish(turn)
+			# move for (default) 1 sec at last behavior velocity
+			elif vel_time_elapsed < VEL_TIMEOUT:
+				vel_pub.publish(last_vel)
+			else:
+				rospy.logwarn("Velocity command timeout, publishing stop message")
+				vel_pub.publish(stop)
+		else:
+			# stop until initial scan data is recieved
+			vel_pub.publish(stop)
+
 		rate.sleep()
 
 
