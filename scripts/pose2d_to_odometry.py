@@ -20,11 +20,13 @@ def on_pose(pose):
 	odom.pose.pose.position.y = pose.y
 	odom.pose.pose.orientation.w = math.cos(pose.theta / 2)
 
+	o = 10**-9 # zero
+
 	odom.pose.covariance = [1, 0, 0, 0, 0, 0,
 							0, 1, 0, 0, 0, 0,
-							0, 0, 0, 0, 0, 0, # z doesn't change
-							0, 0, 0, 0, 0, 0, # constant roll
-							0, 0, 0, 0, 0, 0, # constant pitch
+							0, 0, o, 0, 0, 0, # z doesn't change
+							0, 0, 0, o, 0, 0, # constant roll
+							0, 0, 0, 0, o, 0, # constant pitch
 							0, 0, 0, 0, 0, 0.3] # guess - .3 radians rotation cov
 
 	odom.twist.covariance = [99999, 0, 0, 0, 0, 0,
