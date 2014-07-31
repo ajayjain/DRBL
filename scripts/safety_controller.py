@@ -53,7 +53,9 @@ def on_vel(vel):
 def main():
 	global vel_pub
 
-	rospy.init_node("seek")
+	rospy.init_node("safety_controller")
+
+	rospy.loginfo("initialized safety_controller")
 
 	behavior_cmd_topic = rospy.get_param('~behavior_cmd_topic', 'behavior_vel')
 	robot_cmd_topic = rospy.get_param('~robot_cmd_topic', 'husky/cmd_vel')
@@ -62,6 +64,8 @@ def main():
 
 	VEL_TIMEOUT = rospy.get_param('~velocity_timeout', 1)
 	
+	rospy.loginfo("setting up publishers and subscribers")
+
 	vel_pub = rospy.Publisher(robot_cmd_topic, Twist) # global
 	obstacle_pub = rospy.Publisher(obstacle_topic, Bool)
 	rospy.Subscriber(behavior_cmd_topic, Twist, on_vel)

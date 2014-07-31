@@ -32,7 +32,7 @@ ARSENL Lab, Naval Postgraduate School
 	<include file="$(find husky_pursuit)/launch/game/tf_to_relative.launch" />
 
 	#### 5: ROBOT - SAFTEY CONTROLLERS ###########
-	<include file="$(find husky_pursuit)/launch/game/safety_controller.launch" />
+	<!-- <include file="$(find husky_pursuit)/launch/game/safety_controller.launch" /> -->
 
 	#### 6: ROBOT - BEHAVIORS ###########
 	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">

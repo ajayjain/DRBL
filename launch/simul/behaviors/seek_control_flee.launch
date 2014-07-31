@@ -6,7 +6,7 @@ ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
   	<group ns="robot_0">
-		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node">
+		<node pkg="husky_pursuit" type="pure_seek.py" name="seek_node" output="screen">
 			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
 			<remap from="/target_relative" to="/robot_0/relative1"/>
 
@@ -17,7 +17,7 @@ ARSENL Lab, Naval Postgraduate School
 
 		<!-- <node pkg="husky_pursuit" type="phidget_driver.py" name="$(anon phidget_driver)" /> -->
 
-		<node pkg="husky_pursuit" type="shooter.py" name="$(anon shooter)" output="screen">
+		<node pkg="husky_pursuit" type="shooter.py" name="$(anon shooter)">
 			<remap from="/target_relative" to="/robot_0/relative1" />
 		</node>
 	</group>

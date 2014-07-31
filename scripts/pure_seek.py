@@ -25,8 +25,16 @@ def get_params():
 def seek_rtheta(rtheta, maxlin, maxang):
 	cmd = geometry_msgs.msg.Twist()
 
+	rospy.loginfo('%f %f', rtheta[0], rtheta[1])
+
+	if rtheta[1] > math.pi:
+		rtheta[1] = rtheta[1] - 2 * math.pi
+
+	rospy.loginfo('%f %f', rtheta[0], rtheta[1])
+
 	cmd.linear.x = truncate(rtheta[0], maxlin)
-	cmd.angular.z = truncate(-1 * rtheta[1], maxang) # negate bearing - ccw is positive vel
+	cmd.angular.z = truncate(rtheta[1], maxang) # negate bearing - ccw is positive vel
+	# cmd.angular.z = truncate(-1 * rtheta[1], maxang) # negate bearing - ccw is positive vel
 
 	return cmd
 
