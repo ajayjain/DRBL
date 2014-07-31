@@ -62,7 +62,7 @@ def main():
 	obstacle_topic = rospy.get_param('~obstacle_topic', 'status/obstacle')
 	scan_topic = rospy.get_param('~scan_topic', 'scan')
 
-	VEL_TIMEOUT = rospy.get_param('~velocity_timeout', 1)
+	VEL_TIMEOUT = rospy.get_param('~velocity_timeout', 3)
 	
 	rospy.loginfo("setting up publishers and subscribers")
 
@@ -73,6 +73,7 @@ def main():
 
 	rate = rospy.Rate(40.0)
 	while not rospy.is_shutdown():
+		now = rospy.Time.now()
 
 		obstacle_pub.publish(Bool(emergency))
 
@@ -81,10 +82,10 @@ def main():
 			if emergency:
 				vel_pub.publish(turn)
 			# move for (default) 1 sec at last behavior velocity
-			elif last_vel_time == None or now - last_vel_time < VEL_TIMEOUT:
+			elif last_vel_time == None or (now - last_vel_time).to_sec() < VEL_TIMEOUT:
 				vel_pub.publish(last_vel)
 			else:
-				rospy.logwarn("Velocity command timeout, publishing stop message")
+				rospy.logwarn("Velocity command timeout, publishing stop message. %f - %f = %f", now.to_sec(), last_vel_time.to_sec(), (now - last_vel_time).to_sec())
 				vel_pub.publish(stop)
 		else:
 			# stop until initial scan data is recieved

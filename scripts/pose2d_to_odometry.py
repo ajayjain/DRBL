@@ -7,6 +7,7 @@ ARSENL Lab, Naval Postgraduate School
 
 import roslib; roslib.load_manifest('husky_pursuit')
 import rospy, math
+from tf.transformations import quaternion_from_euler
 from std_msgs.msg import Header
 from geometry_msgs.msg import Pose2D
 from nav_msgs.msg import Odometry
@@ -23,7 +24,12 @@ def on_pose(pose):
 
 	odom.pose.pose.position.x = pose.x
 	odom.pose.pose.position.y = pose.y
-	odom.pose.pose.orientation.w = math.cos(pose.theta / 2)
+	
+	quat = quaternion_from_euler(0, 0, theta)
+	odom.pose.pose.orientation.x = quat[0]
+	odom.pose.pose.orientation.y = quat[1]
+	odom.pose.pose.orientation.z = quat[2]
+	odom.pose.pose.orientation.w = quat[3]
 
 	odom_pub.publish(odom)
 

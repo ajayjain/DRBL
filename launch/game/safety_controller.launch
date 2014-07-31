@@ -5,6 +5,6 @@ July 28, 2014
 ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
-	<node ns="robot_0" machine="robot_0" pkg="husky_pursuit" type="safety_controller.py" name="safety_controller" respawn="true" />
+	<node ns="robot_0" machine="robot_0" pkg="husky_pursuit" type="safety_controller.py" name="safety_controller" respawn="true" output="screen" />
 	<node ns="robot_1" machine="robot_1" pkg="husky_pursuit" type="safety_controller.py" name="safety_controller" respawn="true" />
 </launch>
