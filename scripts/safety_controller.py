@@ -25,7 +25,7 @@ turn.angular.z = 0.3
 
 stop = Twist()
 
-last_vel = None
+last_vel = Twist()
 last_vel_time = None
 
 def on_scan(scan):

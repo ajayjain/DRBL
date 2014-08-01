@@ -32,22 +32,30 @@ ARSENL Lab, Naval Postgraduate School
 	<include file="$(find husky_pursuit)/launch/game/tf_to_relative.launch" />
 
 	#### 5: ROBOT - SAFTEY CONTROLLERS ###########
-	<include file="$(find husky_pursuit)/launch/game/safety_controller.launch" />
+	<!-- <include file="$(find husky_pursuit)/launch/game/safety_controller.launch" /> -->
 
 	#### 6: ROBOT - BEHAVIORS ###########
 	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">
-		<arg name="seek" value="true" />
+		<!-- <arg name="seek" value="true" />
 		<arg name="linear_vel_max" value=".4" />
-		<arg name="angular_vel_max" value=".2" />
+		<arg name="angular_vel_max" value=".2" /> -->
 		
+		<arg name="serpentine" value="true" />
+		<arg name="linear_vel_max" value=".2" />
+		<arg name="angular_vel_max" value=".4" />
+
 		<arg name="own_num" value="0" />
 		<arg name="target_num" value="1" />
 		<arg name="machine" value="robot_0" />
 	</include>
 
 	<include file="$(find husky_pursuit)/launch/game/behaviors.launch">
-		<arg name="flee" value="true" />
+		<!-- <arg name="flee" value="true" />
 		<arg name="linear_vel_max" value=".3" />
+		<arg name="angular_vel_max" value=".4" /> -->
+
+		<arg name="serpentine" value="true" />
+		<arg name="linear_vel_max" value=".2" />
 		<arg name="angular_vel_max" value=".4" />
 		
 		<arg name="own_num" value="1" />
