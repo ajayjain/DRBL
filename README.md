@@ -6,46 +6,45 @@ The project was built during the summer of 2014 at the Naval Postgraduate School
 ## Description of project contents
     ─ scripts-----------------------------------Meat of the package
       ==================================Behaviors:
+      ├── pure_seek.py--------------------------Move toward a goal relative position based on input (distance, bearing)
+      ├── pure_flee.py--------------------------Move away given a RelativePosition (distance, bearing)
+      ├── pursue.py-----------------------------Extrap
       ├── evade.py
-      ├── pure_seek.py
-      ├── pure_flee.py
-      ├── pursue.py
       ├── offset_pursue.py
-      ├── serpentine.py
-      ├── wander.py
+      ├── serpentine.py-------------------------Weave back and forth
+      ├── wander.py-----------------------------Seek a random position
       ==================================
       ├── encoder_frame_remapper.py-------------Remap from encoder to odom, changing the frame id and child frame id for RViz vizualization of odometry
       ├── pose2d_to_odometry.py-----------------Wraps geometry_msgs/Pose2D as nav_msgs/Odometry for use with robot_pose_ekf (Pose2D from laser_scan_matcher)
       ├── safety_controller.py
-      ├── state_publisher.py
       ├── tf_to_relative.py
-      ==================================Gun interface:
+      ├── utils.py------------------------------Mathematical utility methods
+      ==================================Gun interface and robot control:
       ├── phidget_driver.py---------------------Uses phidgets.py. Subs to status/fire and fires on true. Pubs status/heath based on digital input.
       ├── phidgets.py---------------------------Uses the Phidget Python API to expose an interface kit object (Phidget 8/8/8 IO board)
       ├── shooter.py----------------------------Accepts RelativePosition messages and auto-fires when tolerances are met
       ├── manual_shooter.py---------------------Manually shoot with joystick trigger as long as the joy topic is published
-      ==================================
-      ├── utils.py------------------------------Mathematical utility methods
       ├── leap_control.py-----------------------Control of the robot with the Leap Motion. Uses the official Python SDK
       ==================================Older files, not used/finished:
+      └── get_data.py---------------------------Unused. Gets transform data from gazebo, stage etc. Replaced with tf_to_relative.py and RelativePosition.
       ├── goal_publisher.py---------------------Skeleton from original navigation stack architecture
+      ├── state_publisher.py
       ├── model_spawner.sh
       ├── gmapping.bash
-      └── get_data.py---------------------------Unused. Gets transform data from gazebo, stage etc. Replaced with tf_to_relative.py and RelativePosition.
     ─ launch
       ├── amcl.launch
       ├── bringup.launch
       ├── camera
-      │   ├── ar_track.launch
-      │   └── camera.launch
+      │   ├── ar_track.launch-------------------
+      │   └── camera.launch---------------------UVC camera launch. Can be included in launch/game/robot.launch, commented out as imagery is currently mostly unused
       ├── desktop
       │   ├── desktop.launch
       │   ├── sim.launch
       │   └── viz.launch
       ├── game----------------------------------Physical robot launch files. Indentation represents include structure, but this directory is flat.
-      │   ├── system.launch---------------------Main component for physical robot usage.
+      │   ├── system.launch---------------------Main launch for physical robot usage. Run this on your local machine after launching roscore on robot_0
       │   ├──    1 husky.machine
-      │   ├──    2 arbiter.launch
+      │   ├──    2 arbiter.launch---------------Sets up initial "arena" with static transforms from world to robot_<num>/base_footprint. The format of this is args="x y z roll pitch yaw"
       │   ├──        1 dashboard.launch
       │   ├──    3 robot.launch----------------------At the moment, the camera include is commented out to avoid bogging down the network, but is functional if included.
       │   ├──        1 base.launch
@@ -108,8 +107,40 @@ The project was built during the summer of 2014 at the Naval Postgraduate School
     
     12 directories, 114 files
 
+## General usage
+### Stage behavior simulation
+Set up your environment variables (`ROS_HOSTNAME` and `ROS_MASTER_URI`) for a local master as per the ROS wiki.
+To toggle to a local master for just the current terminal, run
+    export ROS_HOSTNAME=`hostname -I`; export ROS_MASTER_URI=http://$ROS_HOSTNAME:11311
+If you followed the NPS ARSENL Yoda wiki for Robotic Laser tag to set up your environment variables, you should that aliased to `local_ros`, which I recommend you set if you are going to be toggling between physical and simulated robots. Otherwise, feel free to set those variables to localhost for pure simulation.
+
+Launch Stage in one terminal (automatically starts roscore):
+    roslaunch husky_pursuit stage.launch
+
+Run a behavior in another terminal:
+    roslaunch husky_pursuit seek_control_flee.launch
+See the `Description of project contents` section for the game behavior launches. With a control launch, use a joystick plugged into your computer.
+
+### Physical robot
+First:
+    ssh ros@192.168.1.125
+    roscore
+Then:
+    roslaunch husky_pursuit system.launch
+You can select the behaviors in system.launch when including behaviors.launch, as well as configure max linear and angular speed.
+
+Recommended - also run `rqt_console` to monitor log messages and possibly `rqt_graph` to view node and topic connections.
+
 ## Future work
 These are potential future work opportunities, but are not all-inclusive by any means.
 ### Architecture
 Convert system to use rocon-multimaster for hydro.
+Dynamic reconfigure/parameter server support for nodes, especially the behaviors.
 Split behaviors off into a steering_behaviors package - this is a specialized usage of that
+
+## Troubleshooting
+### Joystick not working
+If you have a CH Products flightstick, try running:
+    sudo lsusb -v
+Check joystick output with:
+	jstest /dev/input/js0
