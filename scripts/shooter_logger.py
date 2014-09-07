@@ -23,6 +23,7 @@ fire_msg = Bool(True)
 relative_topic = "/target_relative"
 
 fire_count = 0
+last_fire_time = None
 
 def get_params():
     global max_range
@@ -36,18 +37,21 @@ def get_params():
     relative_topic = rospy.get_param('~relative_topic', relative_topic) # topic with target's relative position
 
 def fire_and_log(time):
-    global fire_count
-    fire_pub.publish(fire_msg)
-    shots_file = rospy.get_param('~shots_file', '~/shots.tsv')
-    with open(shots_file, 'a') as shots_file:
-        row = "%f\t%d" % time, fire_count
-        shots_file.write(row)
-    fire_count++
+    global fire_count, last_fire_time
+
+    if last_fire_time == None or time - last_fire_time > 0.5:
+        fire_pub.publish(fire_msg)
+
+        shots_file = rospy.get_param('~shots_file', '~/shots.tsv')
+        with open(shots_file, 'ab') as shots_file:
+            row = "%f\t%d\n" % (time, fire_count)
+            shots_file.write(row)
+        last_fire_time = time
+        fire_count += 1
 
 def on_relative_position(rel):
     time = rospy.get_time()
 
-    print "relative position"
     get_params()
     if rel.range > max_range:
         rospy.loginfo("Out of range: %f", rel.range)

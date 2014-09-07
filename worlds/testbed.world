@@ -47,7 +47,7 @@ resolution 0.02
 interval_sim 20
 
 # real-time milliseconds per update step
-interval_real 2
+interval_real 10
 
 window
 ( 
@@ -67,9 +67,5 @@ floorplan
 )
 
 # throw in the robots
-#husky( pose [ 1 0 0.000 0 ] name "robot0" color "blue")
-#husky( pose [ 5 0 0.000 0 ] name "robot1" color "red")
-#husky( pose [ 3 5 0.000 0.000 ] name "robot3" color "orange")
-
-husky( pose [ 1.000 0.000 0.000 0.000 ] name "robot0" color "blue")
-husky( pose [ 5.000 0.000 0.000 0.000 ] name "robot1" color "red")
+husky( pose [ 4.000 0.000 0.000 0.000 ] name "robot0" color "blue")
+husky( pose [ 0.000 0.000 0.000 0.000 ] name "robot1" color "red")
