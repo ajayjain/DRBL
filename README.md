@@ -133,9 +133,51 @@ Recommended - also run `rqt_console` to monitor log messages and possibly `rqt_g
 
 ## Future work
 These are potential future work opportunities, but are not all-inclusive by any means.
+
+### Localization
+
+AR tag localization  
+Computer vision  
+* Color
+* Feature recognition
+LIDAR movement detection  
+Fuse multiple outputs together - on loss of one (eg bad orientation), still have data. Also comp. viz might give a bearing, but not distance, and still making use of that
+
+### Hardware
+
+Automatic reloading of laser tag guns  
+Designing a custom tag system  
+Mounting laser tag guns and receivers on robots properly  
+Measure actual bearing, yaw tolerances
+
+### Behaviors
+
+Movement manager
+* Take relay responsibility from safety controller  
+  * Safety controller instead continues to publish status  
+  * Movement manager sucks in status and then responds (eg relaying, avoiding)  
+* Compose behaviors, steering behaviors together, priority  
+
+Obstacle avoidance
+Arrival
+Pursuit and Evasion on physical robots
+Gazebo individual control launch file (straightforward, I just first need to fix some issue with four_sim.launch having robots fall through the ground)
+
+### Simulation testing - testing different behaviors against each other
+
+* Set up testing argument files - eg:
+  * seek_vs_flee.csv: <pre>
+max_lin, max_ang, max_lin, max_ang
+0.5, 0.3, 0.3, 0.5
+0.6, 0.2, 0.3, 0.5
+...
+</pre>
+  * Simulate phidget_driver.py damage
+  * Measure/compare time to destruction. Really testing deltas in velocity limits and the performance of behaviors/composed behaviors
+
 ### Architecture
-Convert system to use rocon-multimaster for hydro.
-Dynamic reconfigure/parameter server support for nodes, especially the behaviors.
+Convert system to use rocon-multimaster for hydro.  
+Dynamic reconfigure/parameter server support for nodes, especially the behaviors.  
 Split behaviors off into a steering_behaviors package - this is a specialized usage of that
 
 ## Troubleshooting
