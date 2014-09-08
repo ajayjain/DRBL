@@ -50,7 +50,7 @@ def pursue(own_pose, target_pose, target_vel, maxlin, maxang, extrapolation_time
 	if extrapolation_time is None:
 		dist = pose_distance(own_pose, target_pose)
 		extrapolation_time = dist / MAX_LIN
-		print "dist", dist
+		# print "dist", dist
 
 	future_target_pose = extrapolate(target_pose, target_vel, extrapolation_time)
 	translation = pose_translation(own_pose, future_target_pose)
@@ -58,14 +58,14 @@ def pursue(own_pose, target_pose, target_vel, maxlin, maxang, extrapolation_time
 	yaw = get_yaw(own_pose)
 	relative_translation = rotate(translation, yaw)
 
-	print "CONSTANT_TIME_EXTRAPOLATION", CONSTANT_TIME_EXTRAPOLATION
-	print "extrapolation_time", extrapolation_time
-	print "own_pose", own_pose
-	print "target_pose", target_pose
-	print "target_vel", target_vel
-	print "future_target_pose", future_target_pose
-	print "global translation", translation
-	print "relative translation", relative_translation
+	# print "CONSTANT_TIME_EXTRAPOLATION", CONSTANT_TIME_EXTRAPOLATION
+	# print "extrapolation_time", extrapolation_time
+	# print "own_pose", own_pose
+	# print "target_pose", target_pose
+	# print "target_vel", target_vel
+	# print "future_target_pose", future_target_pose
+	# print "global translation", translation
+	# print "relative translation", relative_translation
 
 	return seek(relative_translation, maxlin, maxang)
 
@@ -107,8 +107,8 @@ def main():
 			cmd = pursue(own_pose, target_pose, target_vel, MAX_LIN, MAX_ANG) # dynamically determine extrapolation time
 
 
-		print "cmd_vel", cmd
-		print '\n'
+		# print "cmd_vel", cmd
+		# print '\n'
 		# rospy.loginfo('linear vel: %f', cmd.linear.x)
 		# rospy.loginfo('angular vel: %f', cmd.angular.z)
 		vel.publish(cmd)

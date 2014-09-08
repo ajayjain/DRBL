@@ -16,7 +16,7 @@ data = []
 pos_data = []
 headers = None
 
-SIM_TIMEOUT_SECS = 30
+SIM_TIMEOUT_SECS = 60*2
 
 def load_params(filename="params.tsv"):
 	global data, pos_data, headers

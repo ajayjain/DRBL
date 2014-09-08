@@ -21,35 +21,24 @@ ARSENL Lab, Naval Postgraduate School
 
 	<node pkg="stage_ros" type="stageros" name="testbed_stage_two_robots" args="$(find husky_pursuit)/analysis/testbed.world" />
 
-	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="$(arg x0) $(arg y0) 0 0 0 0 /world /robot_0/odom 100" />
+	<node respawn="true" pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="$(arg x0) $(arg y0) 0 0 0 0 /world /robot_0/odom 100" />
 
-	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="$(arg x1) $(arg y1) 0 0 0 0 /world /robot_1/odom 100" />
+	<node respawn="true" pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="$(arg x1) $(arg y1) 0 0 0 0 /world /robot_1/odom 100" />
 
-	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01">
+	<node respawn="true" pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01">
 		<param name="own_tf_prefix" value="robot_0" />
 		<param name="target_tf_prefix" value="robot_1" />
 		<remap from="target_relative" to="/robot_0/relative1" />
 	</node>
 
-	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10">
+	<node respawn="true" pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10">
 		<param name="own_tf_prefix" value="robot_1" />
 		<param name="target_tf_prefix" value="robot_0" />
 		<remap from="target_relative" to="/robot_1/relative0" />
 	</node>
 
-	<node pkg="husky_pursuit" type="safety_controller.py" name="$(anon safety_controller)">
-		<remap from="base_scan" to="/robot_0/base_scan" />
-		<remap from="cmd_vel" to="/robot_0/cmd_vel" />
-	</node>
-
-	<node pkg="husky_pursuit" type="safety_controller.py" name="$(anon safety_controller)">
-		<remap from="base_scan" to="/robot_1/base_scan" />
-		<remap from="cmd_vel" to="/robot_1/cmd_vel" />
-	</node>
-
-
   	<group ns="robot_0">
-		<node pkg="husky_pursuit" type="evade.py" name="evade_node" output="screen">
+		<node respawn="true" pkg="husky_pursuit" type="evade.py" name="evade_node" output="screen">
 			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
 			<remap from="/own_odom" to="/robot_0/odom"/>
 			<remap from="/target_odom" to="/robot_1/odom"/>
@@ -70,7 +59,7 @@ ARSENL Lab, Naval Postgraduate School
 		<!-- <include file="$(find husky_teleop)/launch/teleop.launch">
 			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
 		</include> -->
-		<node pkg="husky_pursuit" type="pursue.py" name="pursue_node">
+		<node respawn="true" pkg="husky_pursuit" type="pursue.py" name="pursue_node">
 			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
 			<remap from="/own_odom" to="/robot_1/odom"/>
 			<remap from="/target_odom" to="/robot_0/odom"/>
@@ -81,7 +70,7 @@ ARSENL Lab, Naval Postgraduate School
 			<param name="target_tf_prefix" value="/robot_0" />
 		</node>
 
-		<node pkg="husky_pursuit" type="shooter_logger.py" name="shooter_logger" args="_shots_file:=$(arg shots_file)">
+		<node respawn="true" pkg="husky_pursuit" type="shooter_logger.py" name="shooter_logger" args="_shots_file:=$(arg shots_file)">
 			<remap from="/target_relative" to="/robot_1/relative0" />
 		</node>
 	</group>

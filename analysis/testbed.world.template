@@ -44,10 +44,11 @@ define floorplan model
 resolution 0.02
 
 # milliseconds per update step
-interval_sim 20
+interval_sim 75
 
 # real-time milliseconds per update step
-interval_real 10
+interval_real 25
+gui_interval 300
 
 window
 ( 
