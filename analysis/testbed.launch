@@ -9,15 +9,21 @@ ARSENL Lab, Naval Postgraduate School
 	<arg name="max_ang_0" />
 	<arg name="max_lin_1" />
 	<arg name="max_ang_1" />
+
+	<arg name="x0" />
+	<arg name="y0" />
+	<arg name="x1" />
+	<arg name="y1" />
+	
 	<arg name="shots_file" />
 
 	<param name="/use_sim_time" value="true" />
 
-	<node pkg="stage_ros" type="stageros" name="testbed_stage_two_robots" args="$(find husky_pursuit)/worlds/testbed.world" />
+	<node pkg="stage_ros" type="stageros" name="testbed_stage_two_robots" args="$(find husky_pursuit)/analysis/testbed.world" />
 
-	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="4 0 0 0 0 0 /world /robot_0/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="$(arg x0) $(arg y0) 0 0 0 0 /world /robot_0/odom 100" />
 
-	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="0 0 0 0 0 0 /world /robot_1/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="$(arg x1) $(arg y1) 0 0 0 0 /world /robot_1/odom 100" />
 
 	<node pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01">
 		<param name="own_tf_prefix" value="robot_0" />
@@ -42,7 +48,22 @@ ARSENL Lab, Naval Postgraduate School
 	</node>
 
 
+  	<group ns="robot_0">
+		<node pkg="husky_pursuit" type="evade.py" name="evade_node" output="screen">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<remap from="/own_odom" to="/robot_0/odom"/>
+			<remap from="/target_odom" to="/robot_1/odom"/>
 
+			<param name="linear_vel_max" value="$(arg max_lin_0)" />
+			<param name="angular_vel_max" value="$(arg max_ang_0)" />
+			<!-- <param name="extrapolation_time" value="5" /> -->
+			<param name="extrapolate_with_constant_time" type="boolean" value="false" />
+
+
+			<param name="own_tf_prefix" value="/robot_0" />
+			<param name="target_tf_prefix" value="/robot_1" />
+		</node>
+	</group>
 
 
   	<group ns="robot_1">

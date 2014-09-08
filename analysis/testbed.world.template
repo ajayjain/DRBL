@@ -67,5 +67,5 @@ floorplan
 )
 
 # throw in the robots
-husky( pose [ 4.000 0.000 0.000 0.000 ] name "robot0" color "blue")
-husky( pose [ 0.000 0.000 0.000 0.000 ] name "robot1" color "red")
+husky( pose [ {x0} {y0} 0.000 0.000 ] name "robot0" color "blue")
+husky( pose [ {x1} {y1} 0.000 0.000 ] name "robot1" color "red")
