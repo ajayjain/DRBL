@@ -22,8 +22,8 @@ for i, shotarr in enumerate(shots):
 	ax = plt.subplot(3, 2, i + 1)
 	plt.tight_layout(w_pad=0.0, h_pad=0.00)
 	axes = plt.gca()
-	axes.set_xlim([0,70])
-	axes.set_ylim([0.00,0.30])
+	axes.set_xlim([0,72])
+	axes.set_ylim([0.00,0.27])
 
 	# histogram plotting
 	n, bins, patches = plt.hist(shots[i], num_bins, normed=True, facecolor='green', alpha=0.5, histtype='bar')
@@ -43,8 +43,8 @@ for i, shotarr in enumerate(shots):
 	print avg, med, sigma
 	plt.plot(bins, y, 'r--')
 
-	# add text box
-	textstr = '$\mu=%.2f$\n$\\tilde{\mathrm{t}}=%.2f$\n$\sigma=%.2f$' %(avg, med, sigma)
+	# add text box \\tilde{\mathrm{t}}
+	textstr = '$\mu=%.2f$\n$\mathrm{median}=%.2f$\n$\sigma=%.2f$' %(avg, med, sigma)
 	props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) # these are matplotlib.patch.Patch properties
 	left, width = .35, .5
 	bottom, height = .3, .5
@@ -53,12 +53,12 @@ for i, shotarr in enumerate(shots):
 	ax.text(right, top, textstr, transform=ax.transAxes, fontsize=14,
         horizontalalignment='right', verticalalignment='top', bbox=props)
 
-	plt.ylabel('Probability of time')
+	plt.ylabel('PDF')
 	plt.xlabel('Time $\mathrm{t}$ to $\mathrm{shot\_%d}$ (sec)' % i)
 	plt.title('$\mathrm{shot\_%d}$' % i)
 
 # plt.ylabel('Normalized probability')
-plt.suptitle(r'Probabilities of times for shots 0 through 5')
+plt.suptitle(r'Time probabilities for shots 0 through 5, $\Delta x = 3$, $\Delta y = 4$')
 # Tweak spacing to prevent clipping of ylabel
 
 # plt.subplots_adjust(left=0.15)

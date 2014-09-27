@@ -9,7 +9,7 @@ def mean(data):
 def average_trial_data():
 	dat = dict()
 
-	with open('runs_success.tsv','rb') as tsvin:
+	with open('../runs_success.tsv','rb') as tsvin:
 		tsvin = csv.reader(tsvin, delimiter='\t')
 
 		for row in tsvin:
@@ -25,7 +25,7 @@ def average_trial_data():
 				for i, shot in enumerate(shots):
 					dat[max_ang_1][max_lin_1][i].append(shot)
 
-	with open('runs_failure.tsv','rb') as tsvin:
+	with open('../runs_failure.tsv','rb') as tsvin:
 		tsvin = csv.reader(tsvin, delimiter='\t')
 
 		for row in tsvin:
