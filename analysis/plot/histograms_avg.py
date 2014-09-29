@@ -23,10 +23,10 @@ for i, shotarr in enumerate(shots):
 	plt.tight_layout(w_pad=0.0, h_pad=0.00)
 	axes = plt.gca()
 	axes.set_xlim([0,72])
-	axes.set_ylim([0.00,0.27])
+	axes.set_ylim([0.00,0.28])
 
 	# histogram plotting
-	n, bins, patches = plt.hist(shots[i], num_bins, normed=True, facecolor='green', alpha=0.5, histtype='bar')
+	n, bins, patches = plt.hist(shots[i], num_bins, normed=True, facecolor='green', alpha=0.5, histtype='stepfilled')
 
 	# calculate properties
 	avg = np.mean(shots[i])
