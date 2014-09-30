@@ -107,8 +107,8 @@ def average_trial_data_v2():
 			for (i, shotarr) in enumerate(failure[ang][lin]):
 				failure[ang][lin][i] = -1 # discard array of results, just failure for that set of params
 
-	# pretty(success)
-	# print "-------------"
-	# pretty(failure)
+	pretty(success)
+	print "-------------"
+	pretty(failure)
 
 	return (success, failure)
