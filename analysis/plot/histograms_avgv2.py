@@ -90,7 +90,7 @@ def ECDF():
 		# plt.plot(bins, y, 'r--')
 
 		# add text box \\tilde{\mathrm{t}}
-		textstr = '$\mu=%.2f$\n$\mathrm{median}=%.2f$\n$\sigma=%.2f$' %(avg, med, sigma)
+		textstr = '$\mathrm{mean}=%.2f$ $\mathrm{s}$\n$\mathrm{median}=%.2f$ $\mathrm{s}$\n$\sigma=%.2f$ $\mathrm{s}$' %(avg, med, sigma)
 		props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) # these are matplotlib.patch.Patch properties
 		left, width = .35, .5
 		bottom, height = .24, .5
@@ -139,7 +139,7 @@ def CDF():
 		# plt.plot(bins, y, 'r--')
 
 		# add text box \\tilde{\mathrm{t}}
-		textstr = '$\mu=%.2f$\n$\mathrm{median}=%.2f$\n$\sigma=%.2f$' %(avg, med, sigma)
+		textstr = '$\mathrm{mean}=%.2f$\n$\mathrm{median}=%.2f$\n$\sigma=%.2f$' %(avg, med, sigma)
 		props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) # these are matplotlib.patch.Patch properties
 		left, width = .35, .5
 		bottom, height = .26, .5
