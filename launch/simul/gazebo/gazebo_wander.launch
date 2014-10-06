@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+July 1, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<param name="/use_sim_time" value="true" />
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+    
+	<include file="$(find husky_pursuit)/launch/simul/robots2.launch"/>
+
+  	<group ns="robot1">
+		<node pkg="husky_pursuit" type="wander.py" name="wander_node">
+			<remap from="/cmd_vel" to="/robot1/husky/cmd_vel"/>
+			<param name="linear_vel_max" value="1.0" />
+			<param name="angular_vel_max" value="1.0" />
+		</node>
+	</group>
+
+
+
+	<!-- 
+	  <node name="gazebo" pkg="gazebo" type="gazebo" 
+	   args="$(find your_pkg)/worlds/your.world" respawn="false" output="screen" />
+
+	  <node name="gazebo_gui" pkg="gazebo" type="gui" respawn="false" output="screen"/>
+	 -->
+</launch>

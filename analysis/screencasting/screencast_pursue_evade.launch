@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!-- 
+Ajay jain
+September 7, 2014
+ARSENL Lab, Naval Postgraduate School
+-->
+<launch>
+	<arg name="max_lin_0" default="0.6" />
+	<arg name="max_ang_0" default="1.0" />
+	<arg name="max_lin_1" default="1.0" />
+	<arg name="max_ang_1" default="0.1" />
+
+	<arg name="x0" default="0" />
+	<arg name="y0" default="0" />
+	<arg name="x1" default="-3" />
+	<arg name="y1" default="-4" />
+
+	<param name="/use_sim_time" value="true" />
+
+	<node pkg="stage_ros" type="stageros" name="testbed_stage_two_robots" args="$(find husky_pursuit)/analysis/screencasting/screencast_testbed.world" />
+
+
+	<node respawn="true" pkg="tf" type="static_transform_publisher" name="world_odom0_link" args="$(arg x0) $(arg y0) 0 0 0 0 /world /robot_0/odom 100" />
+
+	<node respawn="true" pkg="tf" type="static_transform_publisher" name="world_odom1_link" args="$(arg x1) $(arg y1) 0 0 0 0 /world /robot_1/odom 100" />
+
+	<node respawn="true" pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_01">
+		<param name="own_tf_prefix" value="robot_0" />
+		<param name="target_tf_prefix" value="robot_1" />
+		<remap from="target_relative" to="/robot_0/relative1" />
+	</node>
+
+	<node respawn="true" pkg="husky_pursuit" type="tf_to_relative.py" name="tf_to_relative_10">
+		<param name="own_tf_prefix" value="robot_1" />
+		<param name="target_tf_prefix" value="robot_0" />
+		<remap from="target_relative" to="/robot_1/relative0" />
+	</node>
+
+  	<group ns="robot_0">
+		<node respawn="true" pkg="husky_pursuit" type="evade.py" name="evade_node" output="screen">
+			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
+			<remap from="/own_odom" to="/robot_0/odom"/>
+			<remap from="/target_odom" to="/robot_1/odom"/>
+
+			<param name="linear_vel_max" value="$(arg max_lin_0)" />
+			<param name="angular_vel_max" value="$(arg max_ang_0)" />
+			<!-- <param name="extrapolation_time" value="5" /> -->
+			<param name="extrapolate_with_constant_time" type="boolean" value="false" />
+
+
+			<param name="own_tf_prefix" value="/robot_0" />
+			<param name="target_tf_prefix" value="/robot_1" />
+		</node>
+	</group>
+
+
+  	<group ns="robot_1">
+		<!-- <include file="$(find husky_teleop)/launch/teleop.launch">
+			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
+		</include> -->
+		<node respawn="true" pkg="husky_pursuit" type="pursue.py" name="pursue_node">
+			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
+			<remap from="/own_odom" to="/robot_1/odom"/>
+			<remap from="/target_odom" to="/robot_0/odom"/>
+
+			<param name="linear_vel_max" value="$(arg max_lin_1)" />
+			<param name="angular_vel_max" value="$(arg max_ang_1)" />
+			<param name="own_tf_prefix" value="/robot_1" />
+			<param name="target_tf_prefix" value="/robot_0" />
+		</node>
+
+		<node respawn="true" pkg="husky_pursuit" type="shooter.py" name="shooter">
+			<remap from="/target_relative" to="/robot_1/relative0" />
+		</node>
+	</group>
+
+	
+
+	<!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find husky_pursuit)/analysis/screencasting/config.rviz" /> -->
+
+</launch>
