@@ -35,6 +35,7 @@ ARSENL Lab, Naval Postgraduate School
 		<node pkg="husky_pursuit" type="behave_tree.py" name="behave_tree_node">
 			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
 			<param name="linear_vel_max" value=".6" />
+			<remap from="/target_relative" to="/robot_1/relative0"/>
 		</node>
 	</group>
 

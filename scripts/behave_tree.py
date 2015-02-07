@@ -39,7 +39,7 @@ import rospy, math, random
 import geometry_msgs.msg
 
 from husky_pursuit.msg import RelativePosition
-from pure_seek import seek
+import pure_seek
 import utils
 
 from pi_trees_lib.pi_trees_lib import *
@@ -90,11 +90,11 @@ class BehaviorCoordinator():
 
 		# Behavior task instances
 		WANDER = WanderWhileTargetLocationUnknown("wander to find target", TARGET_TRACKER)
-		# CHASE_TARGET = ChaseWhileAdvisable("chase target", TARGET_TRACKER)
+		CHASE_TARGET = ChaseWhileAdvisable("chase target", TARGET_TRACKER)
 		# AVOID_TARGET = AvoidTargetWhileAdvisable("avoid target", TARGET_TRACKER)
 
 		RESPOND_TO_TARGET.add_child(WANDER)
-		# RESPOND_TO_TARGET.add_child(CHASE_TARGET)
+		RESPOND_TO_TARGET.add_child(CHASE_TARGET)
 		# RESPOND_TO_TARGET.add_child(AVOID_TARGET)
 
 		PARALLEL_MOVE_SHOOT.add_child(RESPOND_TO_TARGET)
@@ -110,8 +110,9 @@ class BehaviorCoordinator():
 			BEHAVE.announce()
 			status = BEHAVE.run()
 			if status == TaskStatus.SUCCESS:
-				print "Finished running tree. All targets destroyed."
-				break
+				print "Finished running tree. Resetting and allowing to continue until no targets remain."
+				BEHAVE.reset()
+
 
 class TargetTracker():
 	def __init__(self, num_to_destroy):
@@ -169,6 +170,7 @@ class WanderWhileTargetLocationUnknown(Task):
 		return (x, y, 0)
 
 	def run(self):
+		self.announce()
 		while self.target_tracker.choose_first_target() == None:
 			if self.count == Me.WANDER_LOOP_ON_ITER:
 				trans = self.random_translation()
@@ -177,9 +179,39 @@ class WanderWhileTargetLocationUnknown(Task):
 
 			# Seek the random translation and send off
 			print "Seeking trans", trans
-			vel = seek(trans, Me.MAX_LIN, Me.MAX_ANG)
+			vel = pure_seek.seek(trans, Me.MAX_LIN, Me.MAX_ANG)
 			vel.angular.z = utils.truncate(vel.angular.z, vel.linear.x/2) #cap rotation speed
 			MotionValidator.validate_and_publish(vel)
+
+		return TaskStatus.SUCCESS
+
+class ChaseWhileAdvisable(Task):
+	def __init__(self, name, target_tracker, *args, **kwargs):
+		super(ChaseWhileAdvisable, self).__init__(name, *args, **kwargs)
+		
+		self.name = name
+		self.target_tracker = target_tracker
+
+		print "Created task ChaseWhileAdvisable"
+
+	def is_chase_advisable(self, target):
+		return True
+		second_quadrant = 0 <= target.rtheta <= math.pi/2
+		first_quadrant = 1.5*math.pi <= target.rtheta <= 2*math.pi
+		return second_quadrant or first_quadrant
+
+	def run(self):
+		self.announce()
+		target = self.target_tracker.choose_first_target()
+		while self.is_chase_advisable(target):
+			print "Chase advisable, seeking rtheta=", target.rtheta
+			vel = pure_seek.seek_rtheta(target.rtheta, Me.MAX_LIN, Me.MAX_ANG)
+			MotionValidator.validate_and_publish(vel)
+
+			# If a position estimate is lost, get out (go back to Wander)
+			if not target.is_location_known():
+				print "Target location lost. Chase failure."
+				return TaskStatus.FAILURE
 
 		return TaskStatus.SUCCESS
 
