@@ -2,9 +2,35 @@
 
 """
 	behave_tree.py - Version 1.0 2015-02-07
+
+	Sequence: Behave
+		Task: IsTargetRemaining
+		Parallel
+			Task: Movement
+				Parallel
+					Loop: Avoid Obstacles
+						Sequence
+							Task: IsCollisionImminent
+							Task: Rotate
+					Sequence: RespondToTarget
+						Selector: FindTarget
+							Task: IsTargetLocationKnown
+							Task: Wander			(for time)
+						Sequence: ChaseTarget
+							Task: IsChaseAdvisable
+							Task: Pursue			(for time)
+						Selector: AvoidTarget
+							Sequence: AvoidBeingShot
+								Task: IsDamageImminent
+								Task: Serpentine	(for time)
+							Task: Evade				(for time)
+			Task: Shooter	(RUNNING until a shot is fired, then SUCCESS)
+		Inverter: IsTargetDestroyed		(SUCCESS when all targets are destroyed, so behavior is done.
+										 FAILURE when a target remains and Behave should restart from left)
+			Task: IsTargetRemaining
 """
 
-import rospy
+import rospycc
 from pi_trees_lib.pi_trees_lib import *
 from pi_trees_ros.pi_trees_ros import *
 
