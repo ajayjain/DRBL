@@ -3,53 +3,6 @@
 """
 	behave_tree.py - Version 1.0 2015-02-07
 
-	Complete tree:
-	Sequence: Behave
-		Task: IsTargetRemaining
-		Parallel
-			Task: Move
-				Parallel
-					Loop: Avoid Obstacles
-						Sequence
-							Task: IsCollisionImminent
-							Task: Rotate
-					Sequence: RespondToTarget
-						Selector: FindTarget
-							Task: IsTargetLocationKnown
-							Task: Wander			(for time)
-						Sequence: ChaseTarget
-							Task: IsChaseAdvisable
-							Task: Pursue			(for time)
-						Selector: AvoidTarget
-							Sequence: AvoidBeingShot
-								Task: IsDamageImminent
-								Task: Serpentine	(for time)
-							Task: Flee				(for time)
-			Task: Shooter/Shoot	(RUNNING until a shot is fired, then SUCCESS)
-		Inverter: IsTargetDestroyed		(SUCCESS when all targets are destroyed, so behavior is done.
-										 FAILURE when a target remains and Behave should restart from left)
-			Task: IsTargetRemaining
-
-
-	Simple start:
-	Behave while target remains:
-		Parallel:
-			Loop: Avoid Obstacles
-				Sequence
-					Task: IsCollisionImminent
-					Task: Rotate
-			Sequence: RespondToTarget
-				Task: WanderWhileTargetLocationUnknown	(RUNNING while loc unknown
-														 SUCCESS when location is known)
-				Task: PursueWhileAdvisable	(RUNNING while advisable,
-											 SUCCESS when unadvisable)
-				Task: SerpentineWhileDamageImminent	(RUNNING while at risk,
-													 SUCCESS when not at risk)
-				Task: FleeWhileAdvisable	(RUNNING while advisable,
-											 SUCCESS when unadvisable)
-			Task: Shooter/Shoot	(RUNNING until a shot is fired, then SUCCESS)
-
-
 	validate_and_publish(twist vel)
 		# end_point = current_pos + vel*time
 		if will hit obstacle
@@ -82,42 +35,56 @@
 			Task: Shooter/Shoot	(RUNNING until a shot is fired, then SUCCESS restarts Behave loop)
 """
 
-import rospy
+import rospy, math
+import geometry_msgs.msg
 from pi_trees_lib.pi_trees_lib import *
 from pi_trees_ros.pi_trees_ros import *
 
-class Behave():
+class MotionValidator():
+	@classmethod
+	def setup(cls):
+		cls.MAX_LIN = rospy.get_param('~linear_vel_max',  0.8)
+		cls.MAX_ANG = rospy.get_param('~angular_vel_max', math.pi/2)
+		cls.vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist, latch=True) # remap this
+
+	@classmethod
+	def will_hit_obstacle(cls, vel):
+		return False
+
+	@classmethod
+	def validate_and_publish(cls, vel):
+		if cls.will_hit_obstacle(vel):
+			new_vel = geometry_msgs.msg.Twist()
+			new_vel.angular = math.copysign(cls.MAX_ANG, vel.angular) # if angular is near 0, the resulting turn is ~arbitrary
+		else
+			vel_pub.publish(vel)
+
+class BehaviorCoordinator():
 	def __init__(self):
 		BEHAVE = Sequence("behave")
 
-		IS_TARGET_REMAINING = IsTargetRemaining("is_target_remaining", 1) # destroy 1 target
-		PARALLEL_MOVE_SHOOT = Parallel
-
+		TARGET_COUNTER = TargetCounter(1) # destroy 1 target
+		# PARALLEL_MOVE_SHOOT = Parallel
 
 		# Run the tree
-		while True:
+		while TARGET_COUNTER.is_target_remaining():
 			BEHAVE.announce()
 			status = BEHAVE.run()
 			if status == TaskStatus.SUCCESS:
 				print "Finished running tree. All targets destroyed."
 				break
 
-class IsTargetRemaining(Task):
-	def __init__(self, name, num_to_destroy, *args, **kwargs):
-		super(IsTargetRemaining, self).__init__(name, *args, **kwargs)
-
-		self.name = name
+class TargetCounter():
+	def __init__(self, num_to_destroy):
 		self.num_destroyed = 0
 		self.num_to_destroy = num_to_destroy
-		
-		print "Creating task IsTargetRemaining, num_to_destroy=", self.num_to_destroy
+		print "Creating TargetCounter, num_to_destroy=", self.num_to_destroy
 
-	def run(self):
+	def is_target_remaining(self):
 		#TODO: Actually check if we have destroyed anything, and update the counter
 		if self.num_destroyed < num_to_destroy:
-			return TaskStatus.SUCCESS
-
-		return TaskStatus.FAILURE
+			return True
+		return False
 
 class IsTargetLocationKnown(MonitorTask):
 	def __init__(self, name, num_to_destroy, *args, **kwargs):
@@ -125,3 +92,12 @@ class IsTargetLocationKnown(MonitorTask):
 	
 
 	def run(self):
+
+if __name__ == "__main__":
+	rospy.init_node("behave_tree")
+	
+	MotionValidator.setup()
+	BehaviorCoordinator()
+	# rospy.Subscriber('/target_relative', RelativePosition, on_relative) # remap this in the launch file
+
+	rospy.spin()
