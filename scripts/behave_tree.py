@@ -195,6 +195,47 @@ class ChaseWhileAdvisable(Task):
 		print "Created task ChaseWhileAdvisable"
 
 	def is_chase_advisable(self, target):
+		# return True
+		second_quadrant = 0 <= target.rtheta[1] <= math.pi/2
+		first_quadrant = 1.5*math.pi <= target.rtheta[1] <= 2*math.pi
+		return second_quadrant or first_quadrant
+
+	def run(self):
+		self.announce()
+		target = self.target_tracker.choose_first_target()
+		while self.is_chase_advisable(target):
+			print "Chase advisable, seeking rtheta=", target.rtheta
+			vel = pure_seek.seek_rtheta(target.rtheta, Me.MAX_LIN, Me.MAX_ANG)
+			MotionValidator.validate_and_publish(vel)
+
+			# If a position estimate is lost, get out (go back to Wander)
+			if not target.is_location_known():
+				print "Target location lost. Chase failure."
+				return TaskStatus.FAILURE
+
+		rospy.sleep(.5)
+		return TaskStatus.SUCCESS
+
+"""
+				Task: AvoidTargetWhileAdvisable
+					while avoiding target is advisable:
+						if damage is imminent
+							validate_and_publish(Serpentine)
+						else
+							validate_and_publish(Flee)
+					return SUCCESS (no longer need to avoid target, restart Behave loop)
+"""
+"""
+class AvoidTargetWhileAdvisable(Task):
+	def __init__(self, name, target_tracker, *args, **kwargs):
+		super(AvoidTargetWhileAdvisable, self).__init__(name, *args, **kwargs)
+		
+		self.name = name
+		self.target_tracker = target_tracker
+
+		print "Created task AvoidTargetWhileAdvisable"
+
+	def is_avoidance_advisable(self, target):
 		return True
 		second_quadrant = 0 <= target.rtheta <= math.pi/2
 		first_quadrant = 1.5*math.pi <= target.rtheta <= 2*math.pi
@@ -214,7 +255,7 @@ class ChaseWhileAdvisable(Task):
 				return TaskStatus.FAILURE
 
 		return TaskStatus.SUCCESS
-
+"""
 if __name__ == "__main__":
 	rospy.init_node("behave_tree")
 	
