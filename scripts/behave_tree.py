@@ -40,6 +40,7 @@ import geometry_msgs.msg
 
 from husky_pursuit.msg import RelativePosition
 from pure_seek import seek
+import utils
 
 from pi_trees_lib.pi_trees_lib import *
 from pi_trees_ros.pi_trees_ros import *
@@ -48,6 +49,10 @@ from pi_trees_ros.pi_trees_ros import *
 class Me():
 	MAX_LIN = rospy.get_param('~linear_vel_max',  0.8)
 	MAX_ANG = rospy.get_param('~angular_vel_max', math.pi/2)
+	CMD_FREQ  = 10.0
+
+	WANDER_SECONDS_PER_TRANSLATION = 3
+	WANDER_LOOP_ON_ITER = CMD_FREQ * WANDER_SECONDS_PER_TRANSLATION
 
 class MotionValidator():
 	@classmethod
@@ -61,11 +66,15 @@ class MotionValidator():
 
 	@classmethod
 	def validate_and_publish(cls, vel):
+		print "MotionValidator got velocity ", vel
 		if cls.will_hit_obstacle(vel):
 			new_vel = geometry_msgs.msg.Twist()
 			new_vel.angular = math.copysign(Me.MAX_ANG, vel.angular) # if angular is near 0, the resulting turn is ~arbitrary
-		else
-			vel_pub.publish(vel)
+			cls.vel_pub.publish(new_vel)
+		else:
+			print "Publishing velocity"
+			cls.vel_pub.publish(vel)
+		rospy.sleep(1.0/Me.CMD_FREQ)
 
 class BehaviorCoordinator():
 	def __init__(self):
@@ -85,8 +94,8 @@ class BehaviorCoordinator():
 		# AVOID_TARGET = AvoidTargetWhileAdvisable("avoid target", TARGET_TRACKER)
 
 		RESPOND_TO_TARGET.add_child(WANDER)
-		RESPOND_TO_TARGET.add_child(CHASE_TARGET)
-		RESPOND_TO_TARGET.add_child(AVOID_TARGET)
+		# RESPOND_TO_TARGET.add_child(CHASE_TARGET)
+		# RESPOND_TO_TARGET.add_child(AVOID_TARGET)
 
 		PARALLEL_MOVE_SHOOT.add_child(RESPOND_TO_TARGET)
 
@@ -108,11 +117,11 @@ class TargetTracker():
 	def __init__(self, num_to_destroy):
 		self.num_destroyed = 0
 		self.targets = [Target() for i in xrange(num_to_destroy)]
-		print "Created TargetTracker, num_to_destroy=", self.num_to_destroy
+		print "Created TargetTracker, num=%d, targets=" % num_to_destroy, self.targets
 
 	def is_target_remaining(self):
 		#TODO: Actually check if we have destroyed anything, and update the counter
-		if self.num_destroyed < len(targets):
+		if self.num_destroyed < len(self.targets):
 			return True
 		return False
 
@@ -125,7 +134,7 @@ class TargetTracker():
 		return None
 
 class Target():
-	def __init__(self, health=2 topic='/target_relative', timeout=2): # 2 second timeout
+	def __init__(self, health=2, topic='/target_relative', timeout=2): # 2 second timeout
 		self.health = health
 		self.time_last_found = None
 		self.timeout = timeout
@@ -138,41 +147,38 @@ class Target():
 
 	def is_location_known(self):
 		now = rospy.get_time()
-		if self.rtheta != None && self.time_last_found + timeout >= now:
+		if (self.rtheta != None) and (self.time_last_found + self.timeout >= now):
 			return True
 		return False
 
 class WanderWhileTargetLocationUnknown(Task):
-	CMD_FREQ  = 10.0
-	SECONDS_PER_TRANSLATION = 2
-	LOOP_ON_ITER = SECONDS_PER_TRANSLATION * CMD_FREQ
-
 	def __init__(self, name, target_tracker, *args, **kwargs):
 		super(WanderWhileTargetLocationUnknown, self).__init__(name, *args, **kwargs)
 		
 		self.name = name
 		self.target_tracker = target_tracker
 
-		self.count = LOOP_ON_ITER
+		self.count = Me.WANDER_LOOP_ON_ITER
 		self.trans = None
 
 		print "Created task WanderWhileTargetLocationUnknown"
 
-	def random_translation():
-		x = random.uniform(-10, 10)
+	def random_translation(self):
+		x = random.uniform(-1, 1)
 		y = random.uniform(-10, 10)
 		return (x, y, 0)
 
 	def run(self):
-		while target_tracker.choose_first_target() == None:
-			if self.count == LOOP_ON_ITER:
-				trans = random_translation()
-				print "Seeking trans", trans
+		while self.target_tracker.choose_first_target() == None:
+			if self.count == Me.WANDER_LOOP_ON_ITER:
+				trans = self.random_translation()
 				self.count = 0
 			self.count += 1
 
 			# Seek the random translation and send off
+			print "Seeking trans", trans
 			vel = seek(trans, Me.MAX_LIN, Me.MAX_ANG)
+			vel.angular.z = utils.truncate(vel.angular.z, vel.linear.x/2) #cap rotation speed
 			MotionValidator.validate_and_publish(vel)
 
 		return TaskStatus.SUCCESS
