@@ -47,8 +47,11 @@ from pi_trees_ros.pi_trees_ros import *
 
 # Parameters for the robot itself
 class Me():
-	MAX_LIN = rospy.get_param('~linear_vel_max',  0.8)
-	MAX_ANG = rospy.get_param('~angular_vel_max', math.pi/2)
+	@classmethod
+	def get_params(cls):
+		cls.MAX_LIN = rospy.get_param('~linear_vel_max',  0.8)
+		cls.MAX_ANG = rospy.get_param('~angular_vel_max', math.pi/2)
+
 	CMD_FREQ  = 10.0
 
 	WANDER_SECONDS_PER_TRANSLATION = 3
@@ -280,6 +283,7 @@ class AvoidTargetWhileAdvisable(Task):
 if __name__ == "__main__":
 	rospy.init_node("behave_tree")
 	
+	Me.get_params()
 	MotionValidator.setup()
 	BehaviorCoordinator()
 
