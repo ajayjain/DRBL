@@ -39,7 +39,7 @@ import rospy, math, random
 import geometry_msgs.msg
 
 from husky_pursuit.msg import RelativePosition
-import pure_seek
+import pure_seek, pure_flee
 import utils
 
 from pi_trees_lib.pi_trees_lib import *
@@ -53,6 +53,12 @@ class Me():
 
 	WANDER_SECONDS_PER_TRANSLATION = 3
 	WANDER_LOOP_ON_ITER = CMD_FREQ * WANDER_SECONDS_PER_TRANSLATION
+
+	# Used by AvoidTargetWhileAdvisable to determine when to use serpentine
+	MAX_RANGE = 5 # Meters
+	BEARING_TOLERANCE = math.radians(15)
+	YAW_TOLERANCE = math.radians(20)
+
 
 class MotionValidator():
 	@classmethod
@@ -91,11 +97,11 @@ class BehaviorCoordinator():
 		# Behavior task instances
 		WANDER = WanderWhileTargetLocationUnknown("wander to find target", TARGET_TRACKER)
 		CHASE_TARGET = ChaseWhileAdvisable("chase target", TARGET_TRACKER)
-		# AVOID_TARGET = AvoidTargetWhileAdvisable("avoid target", TARGET_TRACKER)
+		AVOID_TARGET = AvoidTargetWhileAdvisable("avoid target", TARGET_TRACKER)
 
 		RESPOND_TO_TARGET.add_child(WANDER)
 		RESPOND_TO_TARGET.add_child(CHASE_TARGET)
-		# RESPOND_TO_TARGET.add_child(AVOID_TARGET)
+		RESPOND_TO_TARGET.add_child(AVOID_TARGET)
 
 		PARALLEL_MOVE_SHOOT.add_child(RESPOND_TO_TARGET)
 
@@ -139,16 +145,16 @@ class Target():
 		self.health = health
 		self.time_last_found = None
 		self.timeout = timeout
-		self.rtheta = None
+		self.rel_pos = None
 		rospy.Subscriber(topic, RelativePosition, self.on_relative) # remap this in the launch file
 
 	def on_relative(self, rel_pos):
 		self.time_last_found = rospy.get_time()
-		self.rtheta = [rel_pos.range, rel_pos.bearing]
+		self.rel_pos = rel_pos
 
 	def is_location_known(self):
 		now = rospy.get_time()
-		if (self.rtheta != None) and (self.time_last_found + self.timeout >= now):
+		if (self.rel_pos != None) and (self.time_last_found + self.timeout >= now):
 			return True
 		return False
 
@@ -195,37 +201,25 @@ class ChaseWhileAdvisable(Task):
 		print "Created task ChaseWhileAdvisable"
 
 	def is_chase_advisable(self, target):
-		# return True
-		second_quadrant = 0 <= target.rtheta[1] <= math.pi/2
-		first_quadrant = 1.5*math.pi <= target.rtheta[1] <= 2*math.pi
+		theta = target.rel_pos.bearing
+		second_quadrant = 0 <= theta <= math.pi/2
+		first_quadrant = 1.5*math.pi <= theta <= 2*math.pi
 		return second_quadrant or first_quadrant
 
 	def run(self):
 		self.announce()
 		target = self.target_tracker.choose_first_target()
 		while self.is_chase_advisable(target):
-			print "Chase advisable, seeking rtheta=", target.rtheta
-			vel = pure_seek.seek_rtheta(target.rtheta, Me.MAX_LIN, Me.MAX_ANG)
+			print "Chase advisable, seeking range=%f, bearing=%f" % (target.rel_pos.range, target.rel_pos.bearing)
+			vel = pure_seek.seek_rtheta([target.rel_pos.range, target.rel_pos.bearing], Me.MAX_LIN, Me.MAX_ANG)
 			MotionValidator.validate_and_publish(vel)
 
 			# If a position estimate is lost, get out (go back to Wander)
 			if not target.is_location_known():
 				print "Target location lost. Chase failure."
 				return TaskStatus.FAILURE
-
-		rospy.sleep(.5)
 		return TaskStatus.SUCCESS
 
-"""
-				Task: AvoidTargetWhileAdvisable
-					while avoiding target is advisable:
-						if damage is imminent
-							validate_and_publish(Serpentine)
-						else
-							validate_and_publish(Flee)
-					return SUCCESS (no longer need to avoid target, restart Behave loop)
-"""
-"""
 class AvoidTargetWhileAdvisable(Task):
 	def __init__(self, name, target_tracker, *args, **kwargs):
 		super(AvoidTargetWhileAdvisable, self).__init__(name, *args, **kwargs)
@@ -236,17 +230,28 @@ class AvoidTargetWhileAdvisable(Task):
 		print "Created task AvoidTargetWhileAdvisable"
 
 	def is_avoidance_advisable(self, target):
-		return True
-		second_quadrant = 0 <= target.rtheta <= math.pi/2
-		first_quadrant = 1.5*math.pi <= target.rtheta <= 2*math.pi
-		return second_quadrant or first_quadrant
+		theta = target.rel_pos.bearing
+		second_quadrant = 0 <= theta <= math.pi/2
+		first_quadrant = 1.5*math.pi <= theta <= 2*math.pi
+		# print theta, second_quadrant, first_quadrant
+		return not(second_quadrant or first_quadrant)
+
+	def is_danger_high(self, target):
+		return False
+		# target.rel_pos
 
 	def run(self):
 		self.announce()
 		target = self.target_tracker.choose_first_target()
-		while self.is_chase_advisable(target):
-			print "Chase advisable, seeking rtheta=", target.rtheta
-			vel = pure_seek.seek_rtheta(target.rtheta, Me.MAX_LIN, Me.MAX_ANG)
+		while self.is_avoidance_advisable(target):
+			if self.is_danger_high(target):
+				print "High Danger, executing Serpentine"
+				#TODO Serpentine
+				pass
+
+			print "Avoidance advisable, fleeing from range=%f, bearing=%f" % (target.rel_pos.range, target.rel_pos.bearing)
+			rtheta = [target.rel_pos.range, target.rel_pos.bearing]
+			vel = pure_flee.flee_rtheta(rtheta, Me.MAX_LIN, Me.MAX_ANG)
 			MotionValidator.validate_and_publish(vel)
 
 			# If a position estimate is lost, get out (go back to Wander)
@@ -255,7 +260,7 @@ class AvoidTargetWhileAdvisable(Task):
 				return TaskStatus.FAILURE
 
 		return TaskStatus.SUCCESS
-"""
+
 if __name__ == "__main__":
 	rospy.init_node("behave_tree")
 	
