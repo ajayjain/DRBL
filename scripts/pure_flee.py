@@ -25,7 +25,7 @@ def get_params():
 
 def flee_rtheta(rtheta, maxlin, maxang):
 	inverted = [rtheta[0], (rtheta[1] + math.pi) % (2 * math.pi)]
-	rospy.loginfo("rtheta %s inverted %s", rtheta, inverted)
+	# rospy.loginfo("rtheta %s inverted %s", rtheta, inverted)
 	return seek_rtheta(inverted, maxlin, maxang)
 
 def flee(translation, maxlin, maxang):

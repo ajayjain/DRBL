@@ -54,11 +54,13 @@ class Me():
 	WANDER_SECONDS_PER_TRANSLATION = 3
 	WANDER_LOOP_ON_ITER = CMD_FREQ * WANDER_SECONDS_PER_TRANSLATION
 
+	SERPENTINE_SECONDS_PER_DIR = 2
+	SERPENTINE_SWITCH_ON_ITER = SERPENTINE_SECONDS_PER_DIR * CMD_FREQ
+
 	# Used by AvoidTargetWhileAdvisable to determine when to use serpentine
 	MAX_RANGE = 5 # Meters
-	BEARING_TOLERANCE = math.radians(15)
-	YAW_TOLERANCE = math.radians(20)
-
+	BEARING_TOLERANCE = math.radians(25)
+	YAW_TOLERANCE = math.radians(30)
 
 class MotionValidator():
 	@classmethod
@@ -72,7 +74,7 @@ class MotionValidator():
 
 	@classmethod
 	def validate_and_publish(cls, vel):
-		print "MotionValidator got velocity ", vel
+		print "MotionValidator got velocity v=%f m/s, w=%f rad/s" % (vel.linear.x, vel.angular.z)
 		if cls.will_hit_obstacle(vel):
 			new_vel = geometry_msgs.msg.Twist()
 			new_vel.angular = math.copysign(Me.MAX_ANG, vel.angular) # if angular is near 0, the resulting turn is ~arbitrary
@@ -227,18 +229,28 @@ class AvoidTargetWhileAdvisable(Task):
 		self.name = name
 		self.target_tracker = target_tracker
 
+		self.serpentine_vel = geometry_msgs.msg.Twist()
+		self.serpentine_vel.linear.x = Me.MAX_LIN
+		self.serpentine_vel.angular.z = Me.MAX_ANG
+		self.count = Me.SERPENTINE_SWITCH_ON_ITER
+		self.delta = 2 * Me.MAX_ANG / Me.SERPENTINE_SWITCH_ON_ITER
+
 		print "Created task AvoidTargetWhileAdvisable"
 
 	def is_avoidance_advisable(self, target):
 		theta = target.rel_pos.bearing
 		second_quadrant = 0 <= theta <= math.pi/2
 		first_quadrant = 1.5*math.pi <= theta <= 2*math.pi
-		# print theta, second_quadrant, first_quadrant
 		return not(second_quadrant or first_quadrant)
 
 	def is_danger_high(self, target):
-		return False
-		# target.rel_pos
+		rel = target.rel_pos
+		print rel
+		is_in_range = rel.range <= Me.MAX_RANGE
+		is_behind = math.pi - Me.BEARING_TOLERANCE <= rel.bearing <= math.pi + Me.BEARING_TOLERANCE
+		is_aimed = (2*math.pi-Me.YAW_TOLERANCE <= rel.yaw <= 2*math.pi) or (0 <= rel.yaw <= Me.YAW_TOLERANCE)
+		return is_in_range and is_behind and is_aimed
+
 
 	def run(self):
 		self.announce()
@@ -246,13 +258,17 @@ class AvoidTargetWhileAdvisable(Task):
 		while self.is_avoidance_advisable(target):
 			if self.is_danger_high(target):
 				print "High Danger, executing Serpentine"
-				#TODO Serpentine
-				pass
-
-			print "Avoidance advisable, fleeing from range=%f, bearing=%f" % (target.rel_pos.range, target.rel_pos.bearing)
-			rtheta = [target.rel_pos.range, target.rel_pos.bearing]
-			vel = pure_flee.flee_rtheta(rtheta, Me.MAX_LIN, Me.MAX_ANG)
-			MotionValidator.validate_and_publish(vel)
+				if self.count == Me.SERPENTINE_SWITCH_ON_ITER:
+					self.delta = self.delta * -1
+					self.count = 0
+				self.serpentine_vel.angular.z += self.delta
+				self.count += 1
+				MotionValidator.validate_and_publish(self.serpentine_vel)
+			else:
+				print "Avoidance advisable, fleeing from range=%f, bearing=%f" % (target.rel_pos.range, target.rel_pos.bearing)
+				rtheta = [target.rel_pos.range, target.rel_pos.bearing]
+				vel = pure_flee.flee_rtheta(rtheta, Me.MAX_LIN, Me.MAX_ANG)
+				MotionValidator.validate_and_publish(vel)
 
 			# If a position estimate is lost, get out (go back to Wander)
 			if not target.is_location_known():
