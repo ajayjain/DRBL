@@ -36,6 +36,7 @@
 """
 
 import rospy, math, random
+import numpy as np
 import geometry_msgs.msg
 
 from husky_pursuit.msg import RelativePosition
@@ -74,6 +75,23 @@ class MotionValidator():
 	def will_hit_obstacle(cls, vel):
 		#TODO Forecast trajectory from velocity and compare to depth data or vision
 		return False
+
+	@classmethod
+	def generate_velocities(cls, target_vel):
+		pass
+
+	# returns an array of points the robot will be at relative to start
+	# 	[(x,y), (x,y), (x,y)]
+	@classmethod
+	def generate_trajectory(cls, vel, t_min, t_max, num_samples):
+		times = np.linspace(t_min, t_max, num_samples)
+		v = vel[0]
+		w = vel[1]
+		x = -1*v*w*np.sin(w*times)
+		y = v*w*(np.cos(w*times) - 1)
+		print times
+		print x
+		print y
 
 	@classmethod
 	def validate_and_publish(cls, vel):
@@ -123,7 +141,6 @@ class BehaviorCoordinator():
 			if status == TaskStatus.SUCCESS:
 				print "Finished running tree. Resetting and allowing to continue until no targets remain."
 				BEHAVE.reset()
-
 
 class TargetTracker():
 	def __init__(self, num_to_destroy):
@@ -286,5 +303,7 @@ if __name__ == "__main__":
 	Me.get_params()
 	MotionValidator.setup()
 	BehaviorCoordinator()
+	# target_vel = (1, math.pi/2)
+	# MotionValidator.generate_trajectory(target_vel, 0, 1, 11)
 
 	rospy.spin()
