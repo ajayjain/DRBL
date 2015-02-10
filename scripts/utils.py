@@ -92,6 +92,8 @@ def truncate(val, max_val):
 	else:
 		return -max_val if val < -max_val else val
 
+
+
 # from http://code.activestate.com/recipes/66472-frange-a-range-function-with-float-increments/
 # def frange(start, end=None, inc=None):
 #     "A range function, that does accept float increments..."

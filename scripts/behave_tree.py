@@ -37,7 +37,9 @@
 
 import rospy, math, random
 import numpy as np
-import geometry_msgs.msg
+from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
+from laser_geometry import LaserProjection
 
 from husky_pursuit.msg import RelativePosition
 import pure_seek, pure_flee
@@ -48,6 +50,12 @@ from pi_trees_ros.pi_trees_ros import *
 
 # Parameters for the robot itself
 class Me():
+	@classmethod
+	def setup(cls):
+		rospy.loginfo("Me.setup called")
+		cls.get_params()
+		# cls.lidar = Lidar()
+
 	@classmethod
 	def get_params(cls):
 		cls.MAX_LIN = rospy.get_param('~linear_vel_max',  0.8)
@@ -66,14 +74,20 @@ class Me():
 	BEARING_TOLERANCE = math.radians(25)
 	YAW_TOLERANCE = math.radians(30)
 
+	VALIDATOR_T_MIN = 0
+	VALIDATOR_T_MAX = 1
+	VALIDATOR_NUM_SAMPLES = 11
+
+
 class MotionValidator():
 	@classmethod
 	def setup(cls):
-		cls.vel_pub = rospy.Publisher('/cmd_vel', geometry_msgs.msg.Twist, latch=True) # remap this
+		cls.vel_pub = rospy.Publisher('/cmd_vel', Twist, latch=True) # remap this
 
 	@classmethod
-	def will_hit_obstacle(cls, vel):
+	def will_hit_obstacle(cls, vel, t_min=Me.VALIDATOR_T_MIN, t_max=Me.VALIDATOR_T_MAX, num_samples=Me.VALIDATOR_NUM_SAMPLES):
 		#TODO Forecast trajectory from velocity and compare to depth data or vision
+		traj = cls.generate_trajectory(vel, t_min, t_max, num_samples)
 		return False
 
 	@classmethod
@@ -89,21 +103,38 @@ class MotionValidator():
 		w = vel[1]
 		x = -1*v*w*np.sin(w*times)
 		y = v*w*(np.cos(w*times) - 1)
-		print times
-		print x
-		print y
+		traj = np.dstack((x, y, times))
+		print traj
+		return traj
 
 	@classmethod
 	def validate_and_publish(cls, vel):
 		print "MotionValidator got velocity v=%f m/s, w=%f rad/s" % (vel.linear.x, vel.angular.z)
 		if cls.will_hit_obstacle(vel):
-			new_vel = geometry_msgs.msg.Twist()
+			new_vel = Twist()
 			new_vel.angular = math.copysign(Me.MAX_ANG, vel.angular) # if angular is near 0, the resulting turn is ~arbitrary
 			cls.vel_pub.publish(new_vel)
 		else:
 			print "Publishing velocity"
 			cls.vel_pub.publish(vel)
 		rospy.sleep(1.0/Me.CMD_FREQ)
+
+class Lidar():
+	def __init__(self, scan_topic="/robot_0/base_scan"):
+		rospy.loginfo("Initializing Lidar class. Creating subscriber")
+		self.scan_sub = rospy.Subscriber(scan_topic, LaserScan, self.on_scan)
+		# self.xy_obstacle_points = None
+		rospy.loginfo("Initializing Lidar class. Creating LaserProjection")
+		self.laser_projector = LaserProjection()
+
+	def on_scan(self, scan):
+		print scan
+		rospy.loginfo("Got scan, projecting")
+		cloud = self.laser_projector.projectLaser(scan)
+		print cloud
+		rospy.loginfo("Printed cloud")
+		rospy.signal_shutdown("printed cloud")
+		
 
 class BehaviorCoordinator():
 	def __init__(self):
@@ -249,7 +280,7 @@ class AvoidTargetWhileAdvisable(Task):
 		self.name = name
 		self.target_tracker = target_tracker
 
-		self.serpentine_vel = geometry_msgs.msg.Twist()
+		self.serpentine_vel = Twist()
 		self.serpentine_vel.linear.x = Me.MAX_LIN
 		self.serpentine_vel.angular.z = Me.MAX_ANG
 		self.count = Me.SERPENTINE_SWITCH_ON_ITER
@@ -300,10 +331,10 @@ class AvoidTargetWhileAdvisable(Task):
 if __name__ == "__main__":
 	rospy.init_node("behave_tree")
 	
-	Me.get_params()
+	Me.setup()
 	MotionValidator.setup()
-	BehaviorCoordinator()
-	# target_vel = (1, math.pi/2)
-	# MotionValidator.generate_trajectory(target_vel, 0, 1, 11)
+	# BehaviorCoordinator()
+	target_vel = (1, math.pi/2)
+	MotionValidator.generate_trajectory(target_vel, 0, 1, 11)
 
 	rospy.spin()
