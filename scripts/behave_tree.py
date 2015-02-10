@@ -61,6 +61,8 @@ class Me():
 		cls.MAX_LIN = rospy.get_param('~linear_vel_max',  0.8)
 		cls.MAX_ANG = rospy.get_param('~angular_vel_max', math.pi/2)
 
+	ESCAPE_VEL = -0.1
+
 	CMD_FREQ  = 10.0
 
 	WANDER_SECONDS_PER_TRANSLATION = 3
@@ -76,7 +78,8 @@ class Me():
 
 	VALIDATOR_T_MIN = 0
 	VALIDATOR_T_MAX = 1
-	VALIDATOR_NUM_SAMPLES = 11
+	VALIDATOR_NUM_TRAJ_SAMPLES = 11
+	VALIDATOR_NUM_VELOCITIES = 10
 
 
 class MotionValidator():
@@ -85,16 +88,38 @@ class MotionValidator():
 		cls.vel_pub = rospy.Publisher('/cmd_vel', Twist, latch=True) # remap this
 
 	@classmethod
-	def will_hit_obstacle(cls, vel, t_min=Me.VALIDATOR_T_MIN, t_max=Me.VALIDATOR_T_MAX, num_samples=Me.VALIDATOR_NUM_SAMPLES):
+	def will_hit_obstacle(cls, vel, t_min=Me.VALIDATOR_T_MIN, t_max=Me.VALIDATOR_T_MAX, num_samples=Me.VALIDATOR_NUM_TRAJ_SAMPLES):
 		#TODO Forecast trajectory from velocity and compare to depth data or vision
 		traj = cls.generate_trajectory(vel, t_min, t_max, num_samples)
+		print 'traj', traj
+		return True
 		return False
 
 	@classmethod
-	def generate_velocities(cls, target_vel):
-		pass
+	def generate_velocities(cls, target_vel, num_samples=Me.VALIDATOR_NUM_VELOCITIES, escape_vel=Me.ESCAPE_VEL):
+		w_arr = np.linspace(-1*Me.MAX_ANG, Me.MAX_ANG, num_samples)
+		v_arr = np.empty(num_samples)
+		v_arr.fill(target_vel[0])
 
-	# returns an array of points the robot will be at relative to start
+		# print 'w_arr', w_arr
+		# print 'target_vel[1]', target_vel
+		# print 'w_arr - target_vel[1]', w_arr - target_vel[1]
+		diff = np.absolute(w_arr - target_vel[1])
+		# print diff
+		raw_velocities = np.dstack((v_arr, w_arr))[0,:,:] # this slice turns the (1, num_samples, 2) array into (num_samples, 2)
+		# print raw_velocities
+		sorted_velocities = raw_velocities[diff.argsort()] # sort absolute difference of angular from actual
+
+		# if all else fails, back up or rotate in place
+		escape_vels = np.array([
+			[escape_vel, target_vel[1]],
+			# [0, math.copysign(Me.MAX_ANG, target_vel[1])],
+			[0, target_vel[1]]
+		])
+		final = np.append(sorted_velocities, escape_vels, axis=0)
+		return final
+
+	# returns an ndarray of points the robot will be at relative to start
 	# 	[(x,y), (x,y), (x,y)]
 	@classmethod
 	def generate_trajectory(cls, vel, t_min, t_max, num_samples):
@@ -104,16 +129,22 @@ class MotionValidator():
 		x = -1*v*w*np.sin(w*times)
 		y = v*w*(np.cos(w*times) - 1)
 		traj = np.dstack((x, y, times))
-		print traj
 		return traj
 
 	@classmethod
 	def validate_and_publish(cls, vel):
-		print "MotionValidator got velocity v=%f m/s, w=%f rad/s" % (vel.linear.x, vel.angular.z)
-		if cls.will_hit_obstacle(vel):
-			new_vel = Twist()
-			new_vel.angular = math.copysign(Me.MAX_ANG, vel.angular) # if angular is near 0, the resulting turn is ~arbitrary
-			cls.vel_pub.publish(new_vel)
+		rospy.loginfo("MotionValidator got velocity v=%f m/s, w=%f rad/s" % (vel.linear.x, vel.angular.z))
+		tup_vel = (vel.linear.x, vel.angular.z)
+		if cls.will_hit_obstacle(tup_vel):
+			# new_vel = Twist()
+			# new_vel.angular.z = math.copysign(Me.MAX_ANG, vel.angular.z) # if angular is near 0, the resulting turn is ~arbitrary
+			# cls.vel_pub.publish(new_vel)
+			vels = cls.generate_velocities(tup_vel)
+			print 'vels', vels
+			for vel in vels:
+				cls.will_hit_obstacle(vel)
+				print 'vel', vel
+				print '\n'
 		else:
 			print "Publishing velocity"
 			cls.vel_pub.publish(vel)
@@ -335,6 +366,12 @@ if __name__ == "__main__":
 	MotionValidator.setup()
 	# BehaviorCoordinator()
 	target_vel = (1, math.pi/2)
-	MotionValidator.generate_trajectory(target_vel, 0, 1, 11)
+	# print MotionValidator.generate_trajectory(target_vel, 0, 1, 11)
+	# print MotionValidator.generate_velocities(target_vel, 10)
+
+	twist = Twist()
+	twist.linear.x = target_vel[0]
+	twist.angular.z = target_vel[1]
+	MotionValidator.validate_and_publish(twist)
 
 	rospy.spin()
