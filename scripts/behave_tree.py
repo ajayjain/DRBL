@@ -49,6 +49,8 @@ import utils
 from pi_trees_lib.pi_trees_lib import *
 from pi_trees_ros.pi_trees_ros import *
 
+import matplotlib.pyplot as plt
+
 # Parameters for the robot itself
 class Me():
 	@classmethod
@@ -78,24 +80,58 @@ class Me():
 	YAW_TOLERANCE = math.radians(30)
 
 	VALIDATOR_T_MIN = 0
-	VALIDATOR_T_MAX = 1
-	VALIDATOR_NUM_TRAJ_SAMPLES = 11
+	VALIDATOR_T_MAX = 2
+	VALIDATOR_NUM_TRAJ_SAMPLES = 20
 	VALIDATOR_NUM_VELOCITIES = 10
 
+	# Distance the LIDAR is moved forward from base_link
+	# eg: LIDAR in front: LIDAR_Y_OFFSET = .5 (positive meters)
+	#TODO: Currently not implemented, use this param to trasform obstacle points
 	LIDAR_Y_OFFSET = 0
+
+	W = 0.990 # width in meters
+	L = 0.670 # length in meters
+	H = 0.390 # height in meters
+	R = math.sqrt(W**2 + L**2 + H**2)/2.0 # radius of robot bounding sphere
 
 
 class MotionValidator():
 	@classmethod
 	def setup(cls):
-		cls.vel_pub = rospy.Publisher('/cmd_vel', Twist, latch=True) # remap this
+		cls.vel_pub = rospy.Publisher('/cmd_vel', Twist, latch=True)
 
 	@classmethod
 	def will_hit_obstacle(cls, vel, t_min=Me.VALIDATOR_T_MIN, t_max=Me.VALIDATOR_T_MAX, num_samples=Me.VALIDATOR_NUM_TRAJ_SAMPLES):
-		#TODO Forecast trajectory from velocity and compare to depth data or vision
 		traj = cls.generate_trajectory(vel, t_min, t_max, num_samples)
-		# print 'traj', traj
-		return True
+
+		if Me.lidar.xyz_points == None or len(Me.lidar.xyz_points.shape) == 0:
+			rospy.logwarn("MotionValidator w.h.o: No LIDAR data recieved yet, returing False")
+			return False
+
+		# x,y coords of projected LIDAR data
+		obs_x = Me.lidar.xyz_points[:,0]
+		obs_y = Me.lidar.xyz_points[:,1]
+		robot_r_sq = Me.R**2
+
+		size = np.ones(obs_x.shape[0])*3
+		size = np.append(size, traj[:,2]*200 + 3)
+		print vel
+
+		# plt.scatter(np.append(obs_x, traj[:,0]), np.append(obs_y, traj[:,1]), s=size)
+		# plt.scatter(traj[:,0], traj[:,1], s=size)
+		# plt.show()
+
+		for (x,y,_t) in traj: # for each future point in the robot's path
+			dist_to_obst_sq = (obs_x - x)**2 + (obs_y - y)**2 # array of d^2 values to each obstacle point
+			will_collide = dist_to_obst_sq <= robot_r_sq
+			# print will_collide
+			if True in will_collide: # if a distance (sq) is <= the robot radius (sq) 
+				rospy.loginfo("MotionValidator w.h.o.: Velocity UNSAFE (%f m/s, %f rad/s)" % vel)
+				# rospy.signal_shutdown("shutdown early")
+				return True # => future collision, report True for will_hit_obstacle
+
+		rospy.loginfo("MotionValidator w.h.o.: Velocity safe (%f m/s, %f rad/s)" % vel)
+		# rospy.signal_shutdown("shutdown")
 		return False
 
 	@classmethod
@@ -104,35 +140,30 @@ class MotionValidator():
 		v_arr = np.empty(num_samples)
 		v_arr.fill(target_vel[0])
 
-		# print 'w_arr', w_arr
-		# print 'target_vel[1]', target_vel
-		# print 'w_arr - target_vel[1]', w_arr - target_vel[1]
 		diff = np.absolute(w_arr - target_vel[1])
-		# print diff
 		raw_velocities = np.dstack((v_arr, w_arr))[0,:,:] # this slice turns the (1, num_samples, 2) array into (num_samples, 2)
-		# print raw_velocities
 		sorted_velocities = raw_velocities[diff.argsort()] # sort absolute difference of angular from actual
 
 		# if all else fails, back up or rotate in place
 		escape_vels = np.array([
 			[escape_vel, target_vel[1]],
-			# [0, math.copysign(Me.MAX_ANG, target_vel[1])],
 			[0, target_vel[1]]
 		])
 		final = np.append(sorted_velocities, escape_vels, axis=0)
 		return final
 
 	# returns an ndarray of points the robot will be at relative to start
-	# 	[(x,y), (x,y), (x,y)]
+	# 	[[x,y,t], [x,y,t], [x,y,t]...]
 	@classmethod
 	def generate_trajectory(cls, vel, t_min, t_max, num_samples):
 		times = np.linspace(t_min, t_max, num_samples)
 		v = vel[0]
 		w = vel[1]
-		x = -1*v*w*np.sin(w*times)
-		y = v*w*(np.cos(w*times) - 1)
+		thetas = -1*w*times
+		x = -1*v*w*np.sin(thetas)
+		y = v*w*(np.cos(thetas) - 1)
 		traj = np.dstack((x, y, times))
-		return traj
+		return traj[0] # get rid of unnecessary dimension
 
 	@classmethod
 	def validate_and_publish(cls, vel):
@@ -140,28 +171,38 @@ class MotionValidator():
 
 		tup_vel = (vel.linear.x, vel.angular.z)
 		pub_vel = vel
-		if cls.will_hit_obstacle(tup_vel):
+
+		# safe if robot won't hit an obstacle
+		safe = not(cls.will_hit_obstacle(tup_vel))
+		if not safe: # if robot will hit an obstacle
 			test_vels = cls.generate_velocities(tup_vel)
-			print 'test_vels', test_vels
+			# print 'test_vels', test_vels
 			for test_vel in test_vels:
-				if not cls.will_hit_obstacle(test_vel)
-					pub_vel = test_vel
+				if not cls.will_hit_obstacle(tuple(test_vel)):
+					pub_vel = Twist()
+					pub_vel.linear.x = test_vel[0]
+					pub_vel.angular.z = test_vel[1]
+					safe = True
 					break
-					
-		rospy.loginfo("MotionValidator: Publishing velociy (%f m/s, %f rad/s)" % (pub_vel.linear.x, pub_vel.angular.z))
-		cls.vel_pub.publish(vel)
+		if safe:
+			rospy.loginfo("MotionValidator: Publishing velociy (%f m/s, %f rad/s)" % (pub_vel.linear.x, pub_vel.angular.z))
+			cls.vel_pub.publish(vel)
+		else:
+			rospy.logwarn("MotionValidator: No safe velocity")
+
 		rospy.sleep(1.0/Me.CMD_FREQ)
 
 	# @classmethod
 	# def pub_rotation(vel):
 	# 	new_vel = Twist()
 	# 	new_vel.angular.z = math.copysign(Me.MAX_ANG, vel.angular.z) # if angular is near 0, the resulting turn is ~arbitrary
+	#	[0, math.copysign(Me.MAX_ANG, target_vel[1])],	
 	# 	cls.vel_pub.publish(new_vel)
 
 class Lidar():
-	def __init__(self, scan_topic="/robot_0/base_scan"):
+	def __init__(self):
 		rospy.loginfo("Initializing Lidar class. Creating subscriber")
-		self.scan_sub = rospy.Subscriber(scan_topic, LaserScan, self.on_scan)
+		self.scan_sub = rospy.Subscriber('/base_scan', LaserScan, self.on_scan)
 		self.xyz_points = None
 		rospy.loginfo("Initializing Lidar class. Creating LaserProjection")
 		self.laser_projector = LaserProjection()
@@ -170,11 +211,14 @@ class Lidar():
 		rospy.loginfo("Got scan, projecting")
 		cloud = self.laser_projector.projectLaser(scan)
 		gen = pc2.read_points(cloud, skip_nans=True, field_names=("x", "y", "z"))
-		self.xyz = tuple(gen)
-		print 'POINTS ASDFASDFBHASDIL', self.xyz
-		rospy.signal_shutdown("down")
-		# self.xyz_generator = gen
-		
+		self.xyz_points = np.array(list(gen))
+		rospy.sleep(1/Me.CMD_FREQ)
+	
+	def show_point_plot(self):
+		x = self.xyz_points[:,0]
+		y = self.xyz_points[:,1]
+		plt.scatter(x, y)
+		plt.show()
 
 class BehaviorCoordinator():
 	def __init__(self):
@@ -277,7 +321,7 @@ class WanderWhileTargetLocationUnknown(Task):
 			self.count += 1
 
 			# Seek the random translation and send off
-			print "Seeking trans", trans
+			# print "Seeking trans", trans
 			vel = pure_seek.seek(trans, Me.MAX_LIN, Me.MAX_ANG)
 			vel.angular.z = utils.truncate(vel.angular.z, vel.linear.x/2) #cap rotation speed
 			MotionValidator.validate_and_publish(vel)

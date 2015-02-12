@@ -52,7 +52,7 @@ ARSENL Lab, Naval Postgraduate School
 		<remap from="target_relative" to="/robot_2/relative1" />
 	</node>
 
-	<node pkg="husky_pursuit" type="safety_controller.py" name="$(anon safety_controller)">
+	<!-- <node pkg="husky_pursuit" type="safety_controller.py" name="$(anon safety_controller)">
 		<remap from="base_scan" to="/robot_0/base_scan" />
 		<remap from="cmd_vel" to="/robot_0/cmd_vel" />
 	</node>
@@ -65,7 +65,7 @@ ARSENL Lab, Naval Postgraduate School
 	<node pkg="husky_pursuit" type="safety_controller.py" name="$(anon safety_controller)">
 		<remap from="base_scan" to="/robot_2/base_scan" />
 		<remap from="cmd_vel" to="/robot_2/cmd_vel" />
-	</node>
+	</node> -->
 
 	<!-- <node pkg="laser_scan_splitter" type="laser_scan_splitter_node" name="$(anon laser_scan_splitter_node)" output="screen">
 		<remap from="scan" to="/robot_0/base_scan" />

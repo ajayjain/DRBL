@@ -65,7 +65,7 @@ window
 ( 
   size [ 1855 1056 ] 
 
-  rotate [ 1.500 0.000 ]
+  rotate [ 0.000 0.000 ]
   scale 13.309
 )
 

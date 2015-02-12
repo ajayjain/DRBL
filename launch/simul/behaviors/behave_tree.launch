@@ -6,19 +6,21 @@ ARSENL Lab, Naval Postgraduate School
 -->
 <launch>
   	<group ns="robot_0">
-		<node pkg="husky_pursuit" type="behave_tree.py" name="behave_tree_node">
+		<node pkg="husky_pursuit" type="behave_tree.py" name="behave_tree_node" output="screen">
 			<remap from="/cmd_vel" to="/robot_0/cmd_vel"/>
-			<param name="linear_vel_max" value=".5" />
+			<remap from="/base_scan" to="/robot_0/base_scan"/>
 			<remap from="/target_relative" to="/robot_0/relative1"/>
+			<param name="linear_vel_max" value=".5" />
 		</node>
 	</group>
 
   	<group ns="robot_1">
-		<node pkg="husky_pursuit" type="behave_tree.py" name="behave_tree_node">
+		<!-- <node pkg="husky_pursuit" type="behave_tree.py" name="behave_tree_node">
+			<remap from="/base_scan" to="/robot_1/base_scan"/>
 			<remap from="/cmd_vel" to="/robot_1/cmd_vel"/>
 			<param name="linear_vel_max" value=".6" />
 			<remap from="/target_relative" to="/robot_1/relative0"/>
-		</node>
+		</node> -->
 
 		<!-- <include file="$(find husky_pursuit)/launch/teleop/key_teleop.launch" output="screen">
 			<arg name="cmd_topic" value="/robot_1/cmd_vel"/>
