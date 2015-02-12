@@ -39,6 +39,7 @@ import rospy, math, random
 import numpy as np
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
+import sensor_msgs.point_cloud2 as pc2
 from laser_geometry import LaserProjection
 
 from husky_pursuit.msg import RelativePosition
@@ -54,7 +55,7 @@ class Me():
 	def setup(cls):
 		rospy.loginfo("Me.setup called")
 		cls.get_params()
-		# cls.lidar = Lidar()
+		cls.lidar = Lidar()
 
 	@classmethod
 	def get_params(cls):
@@ -81,6 +82,8 @@ class Me():
 	VALIDATOR_NUM_TRAJ_SAMPLES = 11
 	VALIDATOR_NUM_VELOCITIES = 10
 
+	LIDAR_Y_OFFSET = 0
+
 
 class MotionValidator():
 	@classmethod
@@ -91,7 +94,7 @@ class MotionValidator():
 	def will_hit_obstacle(cls, vel, t_min=Me.VALIDATOR_T_MIN, t_max=Me.VALIDATOR_T_MAX, num_samples=Me.VALIDATOR_NUM_TRAJ_SAMPLES):
 		#TODO Forecast trajectory from velocity and compare to depth data or vision
 		traj = cls.generate_trajectory(vel, t_min, t_max, num_samples)
-		print 'traj', traj
+		# print 'traj', traj
 		return True
 		return False
 
@@ -133,38 +136,44 @@ class MotionValidator():
 
 	@classmethod
 	def validate_and_publish(cls, vel):
-		rospy.loginfo("MotionValidator got velocity v=%f m/s, w=%f rad/s" % (vel.linear.x, vel.angular.z))
+		rospy.loginfo("MotionValidator: Got velocity v=%f m/s, w=%f rad/s" % (vel.linear.x, vel.angular.z))
+
 		tup_vel = (vel.linear.x, vel.angular.z)
+		pub_vel = vel
 		if cls.will_hit_obstacle(tup_vel):
-			# new_vel = Twist()
-			# new_vel.angular.z = math.copysign(Me.MAX_ANG, vel.angular.z) # if angular is near 0, the resulting turn is ~arbitrary
-			# cls.vel_pub.publish(new_vel)
-			vels = cls.generate_velocities(tup_vel)
-			print 'vels', vels
-			for vel in vels:
-				cls.will_hit_obstacle(vel)
-				print 'vel', vel
-				print '\n'
-		else:
-			print "Publishing velocity"
-			cls.vel_pub.publish(vel)
+			test_vels = cls.generate_velocities(tup_vel)
+			print 'test_vels', test_vels
+			for test_vel in test_vels:
+				if not cls.will_hit_obstacle(test_vel)
+					pub_vel = test_vel
+					break
+					
+		rospy.loginfo("MotionValidator: Publishing velociy (%f m/s, %f rad/s)" % (pub_vel.linear.x, pub_vel.angular.z))
+		cls.vel_pub.publish(vel)
 		rospy.sleep(1.0/Me.CMD_FREQ)
+
+	# @classmethod
+	# def pub_rotation(vel):
+	# 	new_vel = Twist()
+	# 	new_vel.angular.z = math.copysign(Me.MAX_ANG, vel.angular.z) # if angular is near 0, the resulting turn is ~arbitrary
+	# 	cls.vel_pub.publish(new_vel)
 
 class Lidar():
 	def __init__(self, scan_topic="/robot_0/base_scan"):
 		rospy.loginfo("Initializing Lidar class. Creating subscriber")
 		self.scan_sub = rospy.Subscriber(scan_topic, LaserScan, self.on_scan)
-		# self.xy_obstacle_points = None
+		self.xyz_points = None
 		rospy.loginfo("Initializing Lidar class. Creating LaserProjection")
 		self.laser_projector = LaserProjection()
 
 	def on_scan(self, scan):
-		print scan
 		rospy.loginfo("Got scan, projecting")
 		cloud = self.laser_projector.projectLaser(scan)
-		print cloud
-		rospy.loginfo("Printed cloud")
-		rospy.signal_shutdown("printed cloud")
+		gen = pc2.read_points(cloud, skip_nans=True, field_names=("x", "y", "z"))
+		self.xyz = tuple(gen)
+		print 'POINTS ASDFASDFBHASDIL', self.xyz
+		rospy.signal_shutdown("down")
+		# self.xyz_generator = gen
 		
 
 class BehaviorCoordinator():
@@ -364,14 +373,14 @@ if __name__ == "__main__":
 	
 	Me.setup()
 	MotionValidator.setup()
-	# BehaviorCoordinator()
-	target_vel = (1, math.pi/2)
+	BehaviorCoordinator()
+	# target_vel = (1, math.pi/2)
 	# print MotionValidator.generate_trajectory(target_vel, 0, 1, 11)
 	# print MotionValidator.generate_velocities(target_vel, 10)
 
-	twist = Twist()
-	twist.linear.x = target_vel[0]
-	twist.angular.z = target_vel[1]
-	MotionValidator.validate_and_publish(twist)
+	# twist = Twist()
+	# twist.linear.x = target_vel[0]
+	# twist.angular.z = target_vel[1]
+	# MotionValidator.validate_and_publish(twist)
 
 	rospy.spin()
