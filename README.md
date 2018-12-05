@@ -1,7 +1,66 @@
-# Husky Pursuit
-The husky_pursuit package implements Pursuit and Evasion behaviors for ROS Robots and simulation.
-The project was built during the summer of 2014 at the Naval Postgraduate School
+# Distributed Robotic Behavior Layer
+The Distributed Robotic Behavior Layer implements Pursuit and Evasion behaviors for real-world ROS robots and for simulation. The project began during the summer of 2014 at the Naval Postgraduate School
 
+## General usage
+### Stage behavior simulation
+Set up your environment variables (`ROS_HOSTNAME` and `ROS_MASTER_URI`) for a local master as per the ROS wiki.
+To toggle to a local master for just the current terminal, run
+    export ROS_HOSTNAME=`hostname -I`; export ROS_MASTER_URI=http://$ROS_HOSTNAME:11311
+If you followed the NPS ARSENL Yoda wiki for Robotic Laser tag to set up your environment variables, you should that aliased to `local_ros`, which I recommend you set if you are going to be toggling between physical and simulated robots. Otherwise, feel free to set those variables to localhost for pure simulation.
+
+Launch Stage in one terminal (automatically starts roscore):
+    roslaunch husky_pursuit stage.launch
+
+Run a behavior in another terminal:
+    roslaunch husky_pursuit seek_control_flee.launch
+See the `Description of project contents` section for the game behavior launches. With a control launch, use a joystick plugged into your computer.
+
+### Physical robot
+First (example host IP):
+    ssh ros@192.168.1.125
+    roscore
+Then:
+    roslaunch husky_pursuit system.launch
+You can select the behaviors in system.launch when including behaviors.launch, as well as configure max linear and angular speed.
+
+Recommended - also run `rqt_console` to monitor log messages and possibly `rqt_graph` to view node and topic connections.
+
+### Behaviors
+
+Movement manager
+* Take relay responsibility from safety controller  
+  * Safety controller instead continues to publish status  
+  * Movement manager sucks in status and then responds (eg relaying, avoiding)  
+* Compose behaviors, steering behaviors together, priority  
+
+Obstacle avoidance
+Arrival
+Pursuit and Evasion on physical robots
+Gazebo individual control launch file (straightforward, I just first need to fix some issue with four_sim.launch having robots fall through the ground)
+
+### Simulation testing - testing different behaviors against each other
+
+* Set up testing argument files - eg:
+  * seek_vs_flee.csv: <pre>
+max_lin, max_ang, max_lin, max_ang
+0.5, 0.3, 0.3, 0.5
+0.6, 0.2, 0.3, 0.5
+...
+</pre>
+  * Simulate phidget_driver.py damage
+  * Measure/compare time to destruction. Really testing deltas in velocity limits and the performance of behaviors/composed behaviors
+
+### Architecture
+Convert system to use rocon-multimaster for hydro.  
+Dynamic reconfigure/parameter server support for nodes, especially the behaviors.  
+Split behaviors off into a steering_behaviors package - this is a specialized usage of that
+
+## Troubleshooting
+### Joystick not working
+If you have a CH Products flightstick, try running:
+    sudo lsusb -v
+Check joystick output with:
+	jstest /dev/input/js0
 
 ## Description of project contents
     ─ scripts-----------------------------------Meat of the package
@@ -106,83 +165,3 @@ The project was built during the summer of 2014 at the Naval Postgraduate School
     ─ README.md
     
     12 directories, 114 files
-
-## General usage
-### Stage behavior simulation
-Set up your environment variables (`ROS_HOSTNAME` and `ROS_MASTER_URI`) for a local master as per the ROS wiki.
-To toggle to a local master for just the current terminal, run
-    export ROS_HOSTNAME=`hostname -I`; export ROS_MASTER_URI=http://$ROS_HOSTNAME:11311
-If you followed the NPS ARSENL Yoda wiki for Robotic Laser tag to set up your environment variables, you should that aliased to `local_ros`, which I recommend you set if you are going to be toggling between physical and simulated robots. Otherwise, feel free to set those variables to localhost for pure simulation.
-
-Launch Stage in one terminal (automatically starts roscore):
-    roslaunch husky_pursuit stage.launch
-
-Run a behavior in another terminal:
-    roslaunch husky_pursuit seek_control_flee.launch
-See the `Description of project contents` section for the game behavior launches. With a control launch, use a joystick plugged into your computer.
-
-### Physical robot
-First:
-    ssh ros@192.168.1.125
-    roscore
-Then:
-    roslaunch husky_pursuit system.launch
-You can select the behaviors in system.launch when including behaviors.launch, as well as configure max linear and angular speed.
-
-Recommended - also run `rqt_console` to monitor log messages and possibly `rqt_graph` to view node and topic connections.
-
-## Future work
-These are potential future work opportunities, but are not all-inclusive by any means.
-
-### Localization
-
-AR tag localization  
-Computer vision  
-* Color
-* Feature recognition
-LIDAR movement detection  
-Fuse multiple outputs together - on loss of one (eg bad orientation), still have data. Also comp. viz might give a bearing, but not distance, and still making use of that
-
-### Hardware
-
-Automatic reloading of laser tag guns  
-Designing a custom tag system  
-Mounting laser tag guns and receivers on robots properly  
-Measure actual bearing, yaw tolerances
-
-### Behaviors
-
-Movement manager
-* Take relay responsibility from safety controller  
-  * Safety controller instead continues to publish status  
-  * Movement manager sucks in status and then responds (eg relaying, avoiding)  
-* Compose behaviors, steering behaviors together, priority  
-
-Obstacle avoidance
-Arrival
-Pursuit and Evasion on physical robots
-Gazebo individual control launch file (straightforward, I just first need to fix some issue with four_sim.launch having robots fall through the ground)
-
-### Simulation testing - testing different behaviors against each other
-
-* Set up testing argument files - eg:
-  * seek_vs_flee.csv: <pre>
-max_lin, max_ang, max_lin, max_ang
-0.5, 0.3, 0.3, 0.5
-0.6, 0.2, 0.3, 0.5
-...
-</pre>
-  * Simulate phidget_driver.py damage
-  * Measure/compare time to destruction. Really testing deltas in velocity limits and the performance of behaviors/composed behaviors
-
-### Architecture
-Convert system to use rocon-multimaster for hydro.  
-Dynamic reconfigure/parameter server support for nodes, especially the behaviors.  
-Split behaviors off into a steering_behaviors package - this is a specialized usage of that
-
-## Troubleshooting
-### Joystick not working
-If you have a CH Products flightstick, try running:
-    sudo lsusb -v
-Check joystick output with:
-	jstest /dev/input/js0
